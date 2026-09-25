@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Model N Global Pricing</title>
+<title>Model N Global GTN</title>
 <style>
   :root {
     --nav-bg: #0A2540;
@@ -438,6 +438,51 @@
   .action-tag.rebal { background: var(--brand-soft); color: var(--brand-ink); }
   .action-tag.accept { background: var(--warn-soft); color: var(--warn-ink); }
   .action-tag.negotiate { background: var(--net-soft); color: var(--net-ink); }
+  .action-tag.writeback { background: var(--orange-soft); color: var(--orange-ink); }
+
+  .approver-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 12px; margin-top: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); font-size: 11.5px;
+  }
+  .approver-row .approver-label {
+    font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700;
+  }
+  .approver-row .approver-name {
+    color: var(--ink); font-weight: 600;
+  }
+  .approver-row .approver-avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--brand-soft); color: var(--brand-ink);
+    display: grid; place-items: center; font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .approver-row .approver-sla {
+    margin-left: auto; font-size: 11px; color: var(--muted); font-style: italic;
+  }
+
+  .decision-log-card { margin-top: 24px; }
+  .decision-log-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .decision-log-table th {
+    text-align: left; padding: 9px 14px; font-size: 10.5px;
+    font-weight: 700; color: var(--ink-2); letter-spacing: 0.06em;
+    text-transform: uppercase; border-bottom: 1px solid var(--border);
+    background: var(--surface-3);
+  }
+  .decision-log-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+  .decision-log-table tr:last-child td { border-bottom: 0; }
+  .decision-log-table tr:hover td { background: var(--surface-2); }
+  .decision-log-table .log-id {
+    font-family: var(--mono); font-size: 11px; color: var(--brand-ink); font-weight: 600;
+  }
+  .decision-log-table .log-status {
+    display: inline-block; padding: 2px 8px; border-radius: 3px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  }
+  .decision-log-table .log-status.posted { background: var(--net-soft); color: var(--net-ink); }
+  .decision-log-table .log-status.pending { background: var(--warn-soft); color: var(--warn-ink); }
   .action-title { font-size: 15px; font-weight: 700; color: var(--ink); }
   .action-impact-label {
     font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
@@ -804,7 +849,7 @@
       <span class="model">model</span><span class="n">N</span>
     </div>
     <div class="nav-product">
-      <div class="nav-product-name">Global Pricing GTN</div>
+      <div class="nav-product-name">Global GTN</div>
       <div class="nav-product-sub">Ex-US actuals · variance · reallocation</div>
     </div>
     <div class="nav-body">
@@ -828,7 +873,7 @@
       </div>
       <div class="nav-item" data-section="erosion">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M6 20V10M12 20V4M18 20V14"/></svg>
-        IRP Erosion Forecast
+        Projected Erosion
       </div>
       <div class="nav-item" data-section="graph">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8v8M18 8v8M8 6h8M8 18h8"/></svg>
@@ -866,7 +911,7 @@
           <span>FY2026 · Q3 close · YTD through Sep</span>
           <span class="caret">▼</span>
         </div>
-        <div class="status-line">LSO plan v3.2 loaded · <b>7</b> countries live · <b style="color:var(--warn-ink);">3 off-plan</b> · <b style="color:var(--brand-ink);">$8.2M</b> reallocation opportunity</div>
+        <div class="status-line">LSO plan v3.2 · <b style="color:var(--brand-ink);">nSights ex-US actuals</b> through 2026-09-24 · <b>7</b> live · <b style="color:var(--warn-ink);">3 off-plan</b></div>
       </div>
       <div class="topbar-actions">
         <button class="btn tour-launch-btn" onclick="startTour()"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;text-align:center;line-height:16px;font-size:11px;font-weight:700;margin-right:6px;vertical-align:-3px;">?</span>Take a tour</button>
@@ -895,16 +940,18 @@
           <div class="kpi-tile-label">YTD Actuals vs. LSO Plan</div>
           <div class="kpi-tile-value">$<span>121.4</span><span class="unit">M</span></div>
           <div class="kpi-tile-sub"><span class="kpi-delta bad">▼ $5.8M</span> vs. plan · <b>−4.6%</b></div>
+          <div style="margin-top:6px;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">From nSights ex-US actuals</div>
         </div>
         <div class="kpi-tile">
           <div class="kpi-tile-label">FY26 Run-rate Forecast</div>
           <div class="kpi-tile-value">$<span>178.2</span><span class="unit">M</span></div>
           <div class="kpi-tile-sub">LSO plan <b>$188M</b> · <span style="color:var(--deduction-ink);font-weight:600;">gap $9.8M</span></div>
+          <div style="margin-top:6px;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">nSights + LSO plan</div>
         </div>
         <div class="kpi-tile">
           <div class="kpi-tile-label">IRP Erosion Baked-in</div>
-          <div class="kpi-tile-value" style="color:var(--deduction-ink);">−$3.4<span class="unit">M</span></div>
-          <div class="kpi-tile-sub">Next 12mo · driven by <b>FR</b>, <b>ES</b> shortfalls</div>
+          <div class="kpi-tile-value" style="color:var(--deduction-ink);">Elevated</div>
+          <div class="kpi-tile-sub">Next 12mo · driven by <b>FR</b>, <b>ES</b> shortfalls — see Projected Erosion</div>
         </div>
         <div class="kpi-tile">
           <div class="kpi-tile-label">Reallocation Opportunity</div>
@@ -917,7 +964,7 @@
         <div class="insight crit">
           <div class="insight-mark">!</div>
           <div style="flex:1;">
-            <div><b>France is $3.0M short through Sept</b> — 30% below LSO plan. Formulary rollout in 4 regions delayed to Q1-27. Italy and Spain trending <b>+11%</b> and <b>+6%</b> — capacity to absorb $2.4M of the shortfall. Rest of shortfall increases <b>IRP erosion exposure</b> in the referenced countries (GR, PL, TR, SA) by an estimated $1.6M over 12 months.</div>
+            <div><b>France is $3.0M short through Sept</b> — 30% below LSO plan. Formulary rollout in 4 regions delayed to Q1-27. Italy and Spain trending <b>+11%</b> and <b>+6%</b> — capacity to absorb $2.4M of the shortfall. Rest of shortfall materially increases <b>IRP erosion exposure</b> in referenced markets (GR, PL, TR, SA) — quantified in the Projected Erosion tab.</div>
             <div class="insight-actions">
               <button class="insight-btn" onclick="switchTab('rebalance')" title="Jump to the workbench pre-focused on France to net the shortfall against Italy/UK upside before it hits the ledger.">Open Reallocation Workbench</button>
               <button class="insight-btn" onclick="switchTab('performance')" title="Open the full country-by-country actuals-vs-plan grid to see variance drivers across the portfolio.">Review Country Performance</button>
@@ -968,6 +1015,7 @@
           <div class="kpi-tile-label">Countries Live</div>
           <div class="kpi-tile-value">7 <span class="unit">/ 20</span></div>
           <div class="kpi-tile-sub"><b>13</b> pending per LSO sequence</div>
+          <div style="margin-top:6px;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">Actuals: nSights ex-US · 2026-09-24</div>
         </div>
         <div class="kpi-tile">
           <div class="kpi-tile-label">On-track</div>
@@ -1022,8 +1070,8 @@
         </div>
         <div class="kpi-tile">
           <div class="kpi-tile-label">IRP Erosion Avoided</div>
-          <div class="kpi-tile-value" style="color:var(--net-ink);">$1.6<span class="unit">M</span></div>
-          <div class="kpi-tile-sub">by preserving FR published list</div>
+          <div class="kpi-tile-value" style="color:var(--net-ink);">Meaningful</div>
+          <div class="kpi-tile-sub">by preserving FR published list — see Projected Erosion</div>
         </div>
       </div>
 
@@ -1065,6 +1113,17 @@
 
       <div class="body">
         <div class="card">
+          <div style="display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:24px;height:12px;border:1.5px dashed var(--muted-2);border-radius:2px;"></span>
+              <span style="font-size:12px;color:var(--ink-2);"><b style="color:var(--ink);">LSO Plan v3.2</b> loaded <span style="color:var(--muted);">2026-08-14</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:24px;height:12px;background:var(--brand);border-radius:2px;"></span>
+              <span style="font-size:12px;color:var(--ink-2);"><b style="color:var(--ink);">nSights ex-US actuals</b> through <span style="color:var(--muted);">2026-09-24</span></span>
+            </div>
+            <div style="margin-left:auto;font-size:11px;color:var(--muted);"><b style="color:var(--ink);">Hover</b> any actual bar for the LSO-said → reality-is delta.</div>
+          </div>
           <div class="lseq-body">
             <div style="display:grid;grid-template-columns:180px 1fr 130px;">
               <div style="padding:8px 14px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;background:var(--surface-3);border-bottom:1px solid var(--border);">Country</div>
@@ -1114,36 +1173,9 @@
           </div>
         </div>
 
-        <div class="card" style="margin-bottom:20px;">
-          <div class="card-head">
-            <div class="card-title">Mode</div>
-            <div class="erosion-mode-toggle">
-              <button class="active" data-mode="forecast" title="Project erosion from current YTD demand shortfalls. Answers: how much revenue is already at risk given today's performance, without any new payer action?">Forecast from actuals</button>
-              <button data-mode="stress" title="Simulate a hypothetical payer cut on a source country and watch the cascade propagate. Use for what-if planning — 'if AMNOG cuts Germany 15%, what leaks downstream?'">Stress-test</button>
-            </div>
-          </div>
-          <div class="stress-controls" id="stressControls">
-            <div style="display:flex;flex-direction:column;gap:4px;min-width:200px;">
-              <label style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;">Source country</label>
-              <select id="simCountry" title="Pick which country's price change to cascade. Its downstream referencing rules propagate the change country-by-country over 18–24 months." style="padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius);font-family:inherit;font-size:13px;background:var(--surface);">
-                <option value="DE">Germany</option>
-                <option value="FR" selected>France</option>
-                <option value="UK">United Kingdom</option>
-                <option value="IT">Italy</option>
-                <option value="ES">Spain</option>
-              </select>
-            </div>
-            <div style="flex:1;">
-              <div style="display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;">
-                <span>Hypothetical price change</span>
-                <span id="simPctLabel" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--deduction-ink);letter-spacing:-0.02em;">−15.0%</span>
-              </div>
-              <input id="simSlider" type="range" min="-30" max="10" step="0.5" value="-15" title="Drag to change the source-country price by this percentage. Every 1% cut ripples into referenced countries at their basket weight." style="width:100%;">
-              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);">
-                <span>−30%</span><span>−15%</span><span>0%</span><span>+10%</span>
-              </div>
-            </div>
-          </div>
+        <div style="padding:10px 14px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--radius);margin-bottom:20px;font-size:12px;color:var(--ink-2);display:flex;gap:10px;align-items:center;">
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--nav-bg);color:#fff;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Read from actuals</span>
+          <span>This view projects erosion from <b>current YTD demand shortfalls</b> using IRP rules pulled from GPM. Stress-test / what-if simulations are handled upstream in <b>GPM &amp; LSO</b>.</span>
         </div>
 
         <div class="section-kpi-strip" style="grid-template-columns:repeat(4,1fr);padding:0;background:transparent;border-bottom:0;margin-bottom:20px;">
@@ -1228,21 +1260,31 @@
             <div class="card-title">Reference Pricing Network <span class="sub">directed — arrow points from referencer to source</span></div>
             <span style="font-size:11px;color:var(--muted);">20 countries · 78 edges</span>
           </div>
-          <div class="graph-filter-row">
-            <div class="filter-picker">
-              <button class="active" data-filter="all" title="Show every country and every referencing edge. Full picture of global cascade exposure.">All</button>
-              <button data-filter="eu" title="Focus on EU / EEA countries only. Useful for isolating AMNOG, HAS, and JCA-driven cascades within Europe.">EU / EEA</button>
-              <button data-filter="oecd" title="OECD-only subset. Matches the reference basket most Western regulators define.">OECD</button>
-              <button data-filter="gcc" title="Gulf Cooperation Council + EU. GCC markets reference broad country baskets — isolating them shows the strongest downstream exposure.">GCC</button>
+          <div class="graph-filter-row" style="flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:3px;">Region</div>
+              <div class="filter-picker">
+                <button class="active" data-filter="all">All</button>
+                <button data-filter="eu">EU / EEA</button>
+                <button data-filter="oecd">OECD</button>
+                <button data-filter="gcc">GCC</button>
+              </div>
             </div>
-            <span style="margin-left:auto;font-size:11px;color:var(--muted);">Hover a country to see inbound (cascade risk) &amp; outbound (references)</span>
+            <div>
+              <div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:3px;">Color mode</div>
+              <div class="filter-picker" id="graphColorMode">
+                <button data-color="status">Status</button>
+                <button class="active" data-color="exposure">Live cascade exposure</button>
+              </div>
+            </div>
+            <span style="margin-left:auto;font-size:11px;color:var(--muted);align-self:end;">Hover a country to see inbound (cascade risk) &amp; outbound (references)</span>
           </div>
           <svg id="graphSvg" class="graph-svg" viewBox="0 0 900 620"></svg>
-          <div class="graph-legend">
+          <div class="graph-legend" id="graphLegend">
             <span><span class="swatch" style="background:var(--muted-2);"></span> Reference edge</span>
             <span><span class="swatch" style="background:var(--brand);"></span> References selected country</span>
             <span><span class="swatch" style="background:var(--deduction);"></span> Referenced BY selected (cascade risk)</span>
-            <span style="margin-left:auto;color:var(--muted);">Node size ∝ FY26 forecasted net revenue</span>
+            <span style="margin-left:auto;color:var(--muted);" id="graphLegendNote">In exposure mode: red nodes = cascade risk from current shortfalls (FR, ES, JP)</span>
           </div>
         </div>
       </div>
@@ -1251,24 +1293,21 @@
     <!-- ============ CONFIGURATION ============ -->
     <section id="section-config" class="app-section">
       <div class="body">
-        <div class="body-grid">
+        <div style="padding:12px 16px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--radius);margin-bottom:20px;font-size:12px;color:var(--ink-2);display:flex;gap:10px;align-items:center;justify-content:space-between;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--nav-bg);color:#fff;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Managed in GPM</span>
+            <span>Reference-basket definitions, country pricing rules, and per-simulation rule overrides are authored upstream in <b>GPM</b>. This module reads those rules and only exposes policy-level switches that affect the tracking layer.</span>
+          </div>
+          <a href="#" style="color:var(--brand-ink);font-weight:600;font-size:12px;text-decoration:none;white-space:nowrap;">Open Rules in GPM →</a>
+        </div>
+
+        <div style="max-width:640px;">
           <div class="card">
             <div class="card-head">
-              <div class="card-title">Country Rules <span class="sub">international reference pricing definitions</span></div>
-              <button class="btn" style="padding:4px 10px;font-size:11px;" title="Pull the latest reference-basket definitions from Model N's Country Rules as a Service feed. Basket rules change 2–3 times per year per country — a stale rule silently distorts every downstream forecast.">Refresh from CRaaS</button>
+              <div class="card-title">Policy Toggles <span class="sub">tracking-layer switches</span></div>
             </div>
-            <div style="overflow-x:auto;">
-              <table class="config-table" id="ruleTable"></table>
-            </div>
-          </div>
-
-          <div class="rail">
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">Policy Toggles</div>
-              </div>
-              <div>
-                <div class="toggle-row">
+            <div>
+              <div class="toggle-row">
                   <div class="toggle-info">
                     <div class="toggle-name">US MFN (EO 14297)</div>
                     <div class="toggle-desc">Flip US into IRP-derived net. Medicare + new Commercial launches use lowest OECD reference. Signed May 2025.</div>
@@ -1296,7 +1335,6 @@
                   </div>
                   <div class="toggle-switch"></div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1600,7 +1638,23 @@ function renderPerfTable() {
           ? '<span style="color:var(--muted);font-size:11px;">—</span>'
           : '<span style="color:var(--muted);font-size:11px;">no action</span>';
 
-    return `<tr class="row" data-code="${c.code}" title="Open country details on Overview. See referencing chain, downstream cascade exposure, and drill into rate provenance.">
+    // MEA realization — % of planned rebate accrual actually earned; synthesized from status
+    const meaReal = c.launched
+      ? (c.status === 'off' ? 68 : c.status === 'risk' ? 82 : c.status === 'ok' ? 96 : null)
+      : null;
+    const meaColor = meaReal === null ? 'var(--muted)' : meaReal < 75 ? 'var(--deduction-ink)' : meaReal < 90 ? 'var(--warn-ink)' : 'var(--net-ink)';
+    const meaCell = meaReal === null
+      ? '<span style="color:var(--muted);">—</span>'
+      : `<span style="color:${meaColor};font-weight:600;">${meaReal}%</span>`;
+    const provChip = ({
+      irp: '<span class="provenance-pill irp">IRP</span>',
+      hta: '<span class="provenance-pill hta">HTA</span>',
+      tender: '<span class="provenance-pill tender">Tender</span>',
+      list: '<span class="provenance-pill list">Free</span>',
+      mea: '<span class="provenance-pill mea">MEA</span>',
+    })[c.prov] || '';
+
+    return `<tr class="row" data-code="${c.code}">
       <td>
         <div class="country-cell">
           <span class="country-code">${c.code}</span>
@@ -1615,6 +1669,8 @@ function renderPerfTable() {
       <td class="num">${c.actYTD > 0 ? '$'+c.actYTD.toFixed(1)+'M' : '<span style="color:var(--muted);">—</span>'}</td>
       <td class="num">${varPct !== null ? `<span class="${(+varAbs)>=0?'var-pos':'var-neg'}">${(+varAbs)>=0?'+':'−'}$${Math.abs(varAbs)}M</span>` : '<span style="color:var(--muted);">—</span>'}</td>
       <td class="num">${varPct !== null ? `<span class="${(+varPct)>=0?'var-pos':'var-neg'}">${(+varPct)>=0?'+':''}${varPct}%</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+      <td class="num">${meaCell}</td>
+      <td>${provChip}</td>
       <td class="num">${c.planFY > 0 ? '$'+c.ffFY.toFixed(1)+'M' : '<span style="color:var(--muted);">—</span>'}</td>
       <td class="num">${ffVarPct !== null ? `<span class="${(+ffVarAbs)>=0?'var-pos':'var-neg'}">${(+ffVarAbs)>=0?'+':'−'}$${Math.abs(ffVarAbs)}M</span>` : '<span style="color:var(--muted);">—</span>'}</td>
       <td>${trend ? sparkline(trend, {color: c.status==='off'?'var(--deduction)':c.status==='risk'?'var(--warn)':'var(--net)'}) : '<span style="color:var(--muted);">—</span>'}</td>
@@ -1630,6 +1686,8 @@ function renderPerfTable() {
       <th class="num">YTD Actual</th>
       <th class="num">Δ $</th>
       <th class="num">Δ %</th>
+      <th class="num" id="th-mea">MEA Real.</th>
+      <th id="th-rate">Rate</th>
       <th class="num">FY26 Forecast</th>
       <th class="num">Gap to Plan</th>
       <th>Trend</th>
@@ -1664,27 +1722,50 @@ const ACTIONS = {
         {acct:'4100-UK', desc:'Revenue accrual — UK',     dr:'+$1.1M', cr:''},
       ],
       audit:'True-up #TU-2026-Q3-047 · reallocation preserves global FY26 forecast',
+      approver:'Global Pricing Lead',
+      approverName:'M. Grosberg',
+      sla:'Auto-post if approved within 2 business days',
     },
     {
-      tag:'accept', tagLabel:'Accept &amp; recompute', title:'Accept shortfall, recompute global NPV and IRP exposure',
-      desc:'Book the $3.0M miss to FY26 forecast. Recompute IRP referenced-price cascade: FR cut of published list by 12% propagates through PL, TR, SA (basket-min), leaking an additional <b>$1.6M</b> across 18 months. Total impact −$4.6M.',
-      impact:'−$4.6M', impactNeg:true,
+      tag:'accept', tagLabel:'Accept &amp; recompute', title:'Accept shortfall, recompute global forecast &amp; IRP exposure',
+      desc:'Book the $3.0M miss to FY26 forecast. Recompute IRP referenced-price cascade through PL, TR, SA. Downstream erosion projected in <b>Projected Erosion</b> tab. Preserves audit clarity but forgoes recapture.',
+      impact:'Material miss', impactNeg:true,
       je:[
         {acct:'4100-FR', desc:'Revenue accrual — France', dr:'', cr:'−$3.0M'},
-        {acct:'4900-IRP',desc:'IRP erosion reserve',      dr:'', cr:'−$1.6M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve',      dr:'', cr:'projected'},
       ],
-      audit:'True-up #TU-2026-Q3-048 · no reallocation · recompute Erosion Forecast',
+      audit:'True-up #TU-2026-Q3-048 · no reallocation · triggers Projected Erosion recompute',
+      approver:'Finance Controller · Global',
+      approverName:'S. Rao',
+      sla:'Q3 close cutoff · 2026-10-05',
     },
     {
       tag:'negotiate', tagLabel:'MEA renegotiate', title:'Trigger France MEA renegotiation to defend published list',
-      desc:'Model N indicates <b>3 MEA levers</b> available with French CEPP: outcomes-based rebate expansion (+4% net discount, confidential), volume-tier extension, and Q1 rebate reset. Estimated 62% probability of closing the $3.0M gap without cutting list. If successful, downstream IRP erosion <b>avoided</b>.',
-      impact:'+$3.0M', impactNeg:false,
+      desc:'Global GTN identifies <b>3 MEA levers</b> available with French CEPP: outcomes-based rebate expansion (+4% net discount, confidential), volume-tier extension, and Q1 rebate reset. Estimated 62% probability of closing the gap without cutting list. If successful, downstream IRP erosion <b>avoided</b>.',
+      impact:'+$3.0M target', impactNeg:false,
       je:[
-        {acct:'4100-FR', desc:'Revenue accrual — France',        dr:'', cr:''},
-        {acct:'5200-FR', desc:'MEA rebate accrual — France',     dr:'', cr:'+$1.2M'},
-        {acct:'4900-IRP',desc:'IRP erosion reserve (avoided)',   dr:'+$1.6M', cr:''},
+        {acct:'4100-FR', desc:'Revenue accrual — France (defended)', dr:'', cr:''},
+        {acct:'5200-FR', desc:'MEA rebate accrual — France',         dr:'', cr:'+$1.2M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve (avoided)',       dr:'reversed', cr:''},
       ],
       audit:'Requires Global Access + CEPP approval · 3–4 week negotiation window',
+      approver:'VP Global Market Access',
+      approverName:'A. Patel',
+      sla:'Off-cycle · executive escalation required',
+    },
+    {
+      tag:'writeback', tagLabel:'Post to LSO', title:'Post variance back to LSO plan baseline for next cycle',
+      desc:'Write the $3.0M France variance <b>back to GPM-LSO</b> as a plan-baseline adjustment. Next launch-sequence re-solve will use the corrected FR demand curve, tightening the plan for FY27. This closes the loop between actuals and the optimizer — the piece GPM alone does not do.',
+      impact:'Baseline updated', impactNeg:false,
+      je:[
+        {acct:'GPM-LSO',    desc:'Plan baseline v3.2 → v3.3',                dr:'', cr:''},
+        {acct:'FR-demand',  desc:'Demand curve adj · −22% Q3 realized',      dr:'', cr:''},
+        {acct:'FR-launch',  desc:'Launch date adj · Q2-27 (was Q4-26)',      dr:'', cr:''},
+      ],
+      audit:'Write-back #WB-2026-Q3-012 · flows to GPM · triggers LSO re-solve on next cycle',
+      approver:'GPM Steward + Global Pricing Lead',
+      approverName:'C. Lonsdale · M. Grosberg',
+      sla:'Applies to LSO v3.3 build · 2026-10-15',
     },
   ],
   ES: [
@@ -1697,31 +1778,75 @@ const ACTIONS = {
         {acct:'4100-IT', desc:'Revenue accrual — Italy', dr:'+$0.8M', cr:''},
       ],
       audit:'True-up #TU-2026-Q3-049',
+      approver:'Global Pricing Lead',
+      approverName:'M. Grosberg',
+      sla:'Auto-post if approved within 2 business days',
     },
     {
       tag:'accept', tagLabel:'Accept &amp; recompute', title:'Accept ES shortfall',
-      desc:'ES referenced by fewer countries (PL, GR, TR partial). Downstream erosion minimal — $0.2M projected.',
-      impact:'−$1.0M', impactNeg:true,
+      desc:'ES referenced by fewer countries (PL, GR, TR partial). Downstream erosion minimal — see Projected Erosion for detail.',
+      impact:'Minor miss', impactNeg:true,
       je:[
         {acct:'4100-ES', desc:'Revenue accrual — Spain', dr:'', cr:'−$0.8M'},
-        {acct:'4900-IRP',desc:'IRP erosion reserve',     dr:'', cr:'−$0.2M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve',     dr:'', cr:'projected'},
       ],
       audit:'True-up #TU-2026-Q3-050',
+      approver:'Finance Controller · Global',
+      approverName:'S. Rao',
+      sla:'Q3 close cutoff · 2026-10-05',
+    },
+    {
+      tag:'writeback', tagLabel:'Post to LSO', title:'Post ES demand variance to LSO baseline',
+      desc:'Feed ES $0.8M shortfall as a demand curve adjustment to GPM-LSO. Small enough that next re-solve may not shift launch dates, but keeps the baseline honest.',
+      impact:'Baseline updated', impactNeg:false,
+      je:[
+        {acct:'GPM-LSO',    desc:'Plan baseline v3.2 → v3.3',       dr:'', cr:''},
+        {acct:'ES-demand',  desc:'Demand curve adj · −6% Q3',        dr:'', cr:''},
+      ],
+      audit:'Write-back #WB-2026-Q3-013',
+      approver:'GPM Steward',
+      approverName:'C. Lonsdale',
+      sla:'LSO v3.3 build · 2026-10-15',
     },
   ],
   JP: [
     {
       tag:'accept', tagLabel:'Accept &amp; monitor', title:'Accept JP $1.4M shortfall pending MHLW review',
-      desc:'JP is at Wave 2 launch; MHLW pricing review in Q4 will re-baseline. Recommend monitoring rather than immediate reallocation. Downstream: KR references JP via A7 basket — recompute KR forecast −$0.3M.',
-      impact:'−$1.7M', impactNeg:true,
+      desc:'JP is at Wave 2 launch; MHLW pricing review in Q4 will re-baseline. Recommend monitoring rather than immediate reallocation. Downstream: KR references JP via A7 basket — recompute KR forecast on next cycle.',
+      impact:'Deferred', impactNeg:true,
       je:[
         {acct:'4100-JP', desc:'Revenue accrual — Japan', dr:'', cr:'−$1.4M'},
-        {acct:'4900-IRP',desc:'IRP erosion reserve',     dr:'', cr:'−$0.3M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve',     dr:'', cr:'projected'},
       ],
       audit:'Review after 2026-11 MHLW cycle',
+      approver:'Finance Controller · APAC',
+      approverName:'T. Nakamura',
+      sla:'Hold until MHLW cycle · 2026-11',
+    },
+    {
+      tag:'writeback', tagLabel:'Post to LSO', title:'Flag JP for LSO re-solve after MHLW ruling',
+      desc:'Set a conditional write-back that triggers automatically when MHLW publishes its Q4 ruling. LSO will then re-solve JP + downstream KR pricing based on the new baseline.',
+      impact:'Conditional', impactNeg:false,
+      je:[
+        {acct:'GPM-LSO',    desc:'Conditional trigger armed',          dr:'', cr:''},
+        {acct:'JP-baseline',desc:'Awaiting MHLW Q4 ruling',            dr:'', cr:''},
+      ],
+      audit:'Write-back #WB-2026-Q3-014 · armed, awaiting trigger',
+      approver:'GPM Steward + APAC Access',
+      approverName:'C. Lonsdale',
+      sla:'Fires on MHLW publication',
     },
   ],
 };
+
+// Decision log — prior true-ups posted this quarter
+const DECISION_LOG = [
+  { id:'TU-2026-Q2-089', date:'2026-08-14', country:'Netherlands', action:'Reallocate', amount:'−$0.4M', approver:'M. Grosberg', status:'Posted' },
+  { id:'TU-2026-Q2-091', date:'2026-08-20', country:'Sweden',      action:'MEA renegotiate', amount:'+$0.6M', approver:'A. Patel',   status:'In negotiation' },
+  { id:'WB-2026-Q2-008', date:'2026-08-28', country:'Germany',     action:'Post to LSO',     amount:'Baseline v3.1→v3.2', approver:'C. Lonsdale', status:'Posted' },
+  { id:'TU-2026-Q3-041', date:'2026-09-03', country:'UK',          action:'Reallocate',      amount:'+$0.5M ↔ IT', approver:'M. Grosberg', status:'Posted' },
+  { id:'TU-2026-Q3-045', date:'2026-09-18', country:'Italy',       action:'Accept',          amount:'+$0.3M variance', approver:'S. Rao',    status:'Posted' },
+];
 
 function openRebal(code) {
   selectedRebal = code;
@@ -1763,7 +1888,11 @@ function renderRebalDetail() {
       <div style="font-size:12px;color:var(--muted);margin-top:4px;">${country.note} · YTD variance <b style="color:var(--deduction-ink);font-family:var(--mono);">−$${Math.abs(country.varAbs).toFixed(1)}M</b></div>
     </div>
 
-    ${actions.map((a, i) => `
+    ${actions.map((a, i) => {
+      const initials = (a.approverName||'').split(/[·+]/)[0].trim().split(/\s+/).map(s=>s[0]||'').join('').slice(0,2).toUpperCase() || '—';
+      const jeLabel = a.tag === 'writeback' ? 'Write-back preview' : 'Journal entry preview';
+      const applyLabel = a.tag === 'writeback' ? 'Post to GPM' : 'Apply &amp; Post';
+      return `
       <div class="action-card">
         <div class="action-card-head">
           <div>
@@ -1778,19 +1907,54 @@ function renderRebalDetail() {
         <div class="action-body">
           <div class="action-desc">${a.desc}</div>
           <div class="je-preview">
-            <span class="je-label">Journal entry preview</span>
+            <span class="je-label">${jeLabel}</span>
             ${a.je.map(row => `<div class="je-row"><span>${row.acct}</span><span style="color:var(--muted);">${row.desc}</span><span class="pos">${row.dr||''}</span><span class="neg">${row.cr||''}</span></div>`).join('')}
+          </div>
+          <div class="approver-row">
+            <div class="approver-avatar">${initials}</div>
+            <div>
+              <div class="approver-label">Approver</div>
+              <div class="approver-name">${a.approverName} <span style="color:var(--muted);font-weight:400;font-size:11px;">· ${a.approver}</span></div>
+            </div>
+            <div class="approver-sla">${a.sla}</div>
           </div>
         </div>
         <div class="action-footer">
           <div class="action-audit">${a.audit}</div>
           <div>
-            <button class="btn" style="padding:5px 12px;font-size:12px;" title="Preview the impact without posting. Recomputes global forecast and IRP erosion so you can compare options before committing.">Simulate</button>
-            <button class="btn btn-primary" style="padding:5px 12px;font-size:12px;" title="Commit this adjustment. Writes a journal entry with full audit trail — reversible until close is locked.">Apply &amp; Post</button>
+            <button class="btn" style="padding:5px 12px;font-size:12px;">Simulate</button>
+            <button class="btn btn-primary" style="padding:5px 12px;font-size:12px;">${applyLabel}</button>
           </div>
         </div>
       </div>
-    `).join('')}
+    `;}).join('')}
+
+    <div class="card decision-log-card">
+      <div class="card-head">
+        <div class="card-title">Decision Log <span class="sub">this quarter · country-level true-ups &amp; write-backs</span></div>
+        <span style="font-size:11px;color:var(--muted);"><b style="color:var(--ink);">${DECISION_LOG.length}</b> entries · click any to inspect</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="decision-log-table">
+          <thead><tr>
+            <th>ID</th><th>Date</th><th>Country</th><th>Action</th><th>Amount / Effect</th><th>Approver</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+          ${DECISION_LOG.map(d => `
+            <tr>
+              <td><span class="log-id">${d.id}</span></td>
+              <td style="color:var(--muted);font-family:var(--mono);font-size:11.5px;">${d.date}</td>
+              <td><b>${d.country}</b></td>
+              <td>${d.action}</td>
+              <td style="font-family:var(--mono);font-variant-numeric:tabular-nums;">${d.amount}</td>
+              <td style="color:var(--ink-2);">${d.approver}</td>
+              <td><span class="log-status ${d.status==='Posted'?'posted':'pending'}">${d.status}</span></td>
+            </tr>
+          `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
   `;
 }
 
@@ -1860,6 +2024,14 @@ function renderLseq() {
       actBar.style.left = `calc(${(c.launchM_actual / 36) * 100}% + 2px)`;
       actBar.style.width = `calc(${(duration / 36) * 100}% - 4px)`;
       actBar.innerHTML = `${c.code} · ${c.launched ? 'Actual' : 'Current'} · M+${c.launchM_actual}`;
+      actBar.style.cursor = 'help';
+      const fyImpact = c.launched && c.planFY > 0 ? (c.ffFY - c.planFY) : 0;
+      const deltaTxt = delta === 0 ? 'on plan' : (delta > 0 ? `+${delta} months (behind)` : `${delta} months (ahead)`);
+      const impactTxt = fyImpact === 0 ? '$0M' : (fyImpact > 0 ? '+$' : '−$') + Math.abs(fyImpact).toFixed(1) + 'M FY';
+      actBar.addEventListener('mouseenter', e => showTip(e, `${c.name} · launch delta`,
+        `LSO said M+${c.launchM_plan} · Reality is M+${c.launchM_actual} · Δ ${deltaTxt} · FY revenue impact ${impactTxt}`));
+      actBar.addEventListener('mousemove', moveTip);
+      actBar.addEventListener('mouseleave', hideTip);
       tl.appendChild(actBar);
     }
 
@@ -2193,19 +2365,65 @@ const GRAPH_LAYOUT = {
 };
 let selectedNode = null;
 
-function renderGraph(filter='all') {
+let graphFilter = 'all';
+let graphColorMode = 'exposure'; // default to the differentiator
+
+// Compute cascade-exposure map: how much erosion pressure each country receives
+// from CURRENT shortfalls (FR, ES, JP), following the referencing graph.
+function computeExposure() {
+  const shortfalls = { FR: 3.0, ES: 0.8, JP: 1.4 }; // $M shortfall today
+  const exposure = {}; // code -> pressure score
+  COUNTRIES.forEach(c => { exposure[c.code] = 0; });
+  // BFS: for every country referencing a shortfall source, add weighted pressure
+  Object.entries(shortfalls).forEach(([src, mag]) => {
+    // direct referencers (weight 1)
+    const q = COUNTRIES.filter(c => c.refs.includes(src)).map(c => ({code:c.code, w:1.0}));
+    const seen = new Set([src]);
+    while (q.length) {
+      const {code, w} = q.shift();
+      if (seen.has(code)) continue;
+      seen.add(code);
+      exposure[code] += mag * w;
+      // second-order: countries that reference this one, at reduced weight
+      COUNTRIES.filter(c => c.refs.includes(code)).forEach(c => {
+        if (!seen.has(c.code)) q.push({code:c.code, w:w * 0.4});
+      });
+    }
+  });
+  return exposure;
+}
+function exposureColor(score) {
+  if (score >= 1.5) return '#DC4A48'; // high risk
+  if (score >= 0.6) return '#EA8862'; // medium
+  if (score >= 0.2) return '#F6C9A8'; // light
+  if (score > 0)    return '#FCE8DC'; // touched
+  return '#DDE6EE';                    // untouched
+}
+function exposureLabel(score) {
+  if (score >= 1.5) return 'High cascade risk';
+  if (score >= 0.6) return 'Medium exposure';
+  if (score >= 0.2) return 'Low exposure';
+  if (score > 0)    return 'Touched by cascade';
+  return 'No current exposure';
+}
+
+function renderGraph(filter, colorMode) {
+  if (filter) graphFilter = filter;
+  if (colorMode) graphColorMode = colorMode;
   const svg = document.getElementById('graphSvg');
   svg.innerHTML = '';
   const ns = 'http://www.w3.org/2000/svg';
 
   const included = COUNTRIES.filter(c => {
-    if (filter === 'all') return true;
-    if (filter === 'eu') return c.r === 'EU';
-    if (filter === 'oecd') return ['EU','AM','AS'].includes(c.r);
-    if (filter === 'gcc') return c.r === 'GCC' || c.r === 'EU';
+    if (graphFilter === 'all') return true;
+    if (graphFilter === 'eu') return c.r === 'EU';
+    if (graphFilter === 'oecd') return ['EU','AM','AS'].includes(c.r);
+    if (graphFilter === 'gcc') return c.r === 'GCC' || c.r === 'EU';
     return true;
   });
   const codes = new Set(included.map(c => c.code));
+  const exposure = computeExposure();
+  const shortfallSources = new Set(['FR','ES','JP']);
 
   const defs = document.createElementNS(ns, 'defs');
   defs.innerHTML = `
@@ -2244,21 +2462,54 @@ function renderGraph(filter='all') {
     const rad = Math.max(14, Math.min(34, Math.sqrt(rev * 10) * 1.4));
     const circ = document.createElementNS(ns, 'circle');
     circ.setAttribute('r', rad);
-    circ.setAttribute('fill', statusColor(c.status));
+    // Color mode: status uses the same palette as the map; exposure uses cascade heat
+    let fill;
+    if (graphColorMode === 'exposure') {
+      fill = shortfallSources.has(c.code) ? '#0A2540' : exposureColor(exposure[c.code]);
+    } else {
+      fill = statusColor(c.status);
+    }
+    circ.setAttribute('fill', fill);
+    if (graphColorMode === 'exposure' && shortfallSources.has(c.code)) {
+      circ.setAttribute('stroke', '#DC4A48');
+      circ.setAttribute('stroke-width', '3');
+    }
     g.appendChild(circ);
     const t = document.createElementNS(ns, 'text');
     t.setAttribute('y', 3);
+    if (graphColorMode === 'exposure' && shortfallSources.has(c.code)) {
+      t.setAttribute('fill', '#fff');
+    } else if (graphColorMode === 'exposure' && exposure[c.code] >= 1.5) {
+      t.setAttribute('fill', '#fff');
+    }
     t.textContent = c.code;
     g.appendChild(t);
     g.addEventListener('mouseenter', e => {
       highlightNode(c.code);
-      showTip(e, c.name, `${statusLabel(c.status)} · references ${c.refs.length} · referenced by ${COUNTRIES.filter(x=>x.refs.includes(c.code)).length}`);
+      let tipBody;
+      if (graphColorMode === 'exposure') {
+        const scoreLabel = shortfallSources.has(c.code)
+          ? `Shortfall source · driving cascade`
+          : `${exposureLabel(exposure[c.code])} (score ${exposure[c.code].toFixed(2)})`;
+        tipBody = `${scoreLabel} · references ${c.refs.length} · referenced by ${COUNTRIES.filter(x=>x.refs.includes(c.code)).length}`;
+      } else {
+        tipBody = `${statusLabel(c.status)} · references ${c.refs.length} · referenced by ${COUNTRIES.filter(x=>x.refs.includes(c.code)).length}`;
+      }
+      showTip(e, c.name, tipBody);
     });
     g.addEventListener('mousemove', moveTip);
     g.addEventListener('mouseleave', () => { hideTip(); clearHighlight(); });
     g.addEventListener('click', () => { selectedNode = c.code; highlightNode(c.code); });
     svg.appendChild(g);
   });
+
+  // Update legend based on mode
+  const legendNote = document.getElementById('graphLegendNote');
+  if (legendNote) {
+    legendNote.textContent = graphColorMode === 'exposure'
+      ? 'Red-outlined nodes are current shortfall sources (FR, ES, JP). Heat = cascade pressure through referencing graph.'
+      : 'Node color = launch status · size ∝ FY26 forecasted net revenue';
+  }
 }
 function highlightNode(code) {
   const svg = document.getElementById('graphSvg');
@@ -2295,7 +2546,8 @@ function renderRuleTable() {
       <td style="color:var(--muted);font-size:12px;">2026-08-14</td>
     </tr>
   `).join('');
-  document.getElementById('ruleTable').innerHTML = `
+  const rt = document.getElementById('ruleTable'); if (!rt) return;
+  rt.innerHTML = `
     <thead><tr><th>Country</th><th>Basket rule</th><th>References</th><th>Referenced by</th><th>Rate type</th><th>Rule refresh</th></tr></thead>
     <tbody>${rows}</tbody>
   `;
@@ -2322,7 +2574,7 @@ const TITLES = {
   performance: 'Country Performance',
   rebalance: 'Reallocation Workbench',
   lso: 'LSO Plan vs. Actuals',
-  erosion: 'IRP Erosion Forecast',
+  erosion: 'Projected Erosion',
   graph: 'Referencing Graph',
   config: 'Configuration',
 };
@@ -2343,41 +2595,15 @@ document.querySelectorAll('.nav-item').forEach(t => {
   t.addEventListener('click', () => { if (t.dataset.section) switchTab(t.dataset.section); });
 });
 
-// Erosion mode toggle
-document.querySelectorAll('.erosion-mode-toggle button').forEach(b => {
+// Region filter (Region row in the graph controls) & color-mode toggle
+document.querySelectorAll('.graph-filter-row .filter-picker button').forEach(b => {
   b.addEventListener('click', () => {
-    document.querySelectorAll('.erosion-mode-toggle button').forEach(x => x.classList.remove('active'));
+    // Toggle active within the same picker only
+    const parent = b.parentElement;
+    parent.querySelectorAll('button').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    erosionMode = b.dataset.mode;
-    document.getElementById('stressControls').classList.toggle('active', erosionMode === 'stress');
-    if (erosionMode === 'forecast') {
-      simCascade = CASCADE_FR;
-      simPct = -8;
-    }
-    renderCascade();
-    renderCascadeTimeline();
-  });
-});
-
-document.getElementById('simSlider').addEventListener('input', e => {
-  simPct = parseFloat(e.target.value);
-  document.getElementById('simPctLabel').textContent = (simPct >= 0 ? '+' : '') + simPct.toFixed(1) + '%';
-  document.getElementById('simPctLabel').style.color = simPct < 0 ? 'var(--deduction-ink)' : (simPct > 0 ? 'var(--net-ink)' : 'var(--ink)');
-  renderCascade();
-  renderCascadeTimeline();
-});
-document.getElementById('simCountry').addEventListener('change', e => {
-  const v = e.target.value;
-  simCascade = v === 'DE' ? CASCADE_DE : CASCADE_FR;
-  renderCascade();
-  renderCascadeTimeline();
-});
-
-document.querySelectorAll('.filter-picker button').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.filter-picker button').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    renderGraph(b.dataset.filter);
+    if (b.dataset.filter) renderGraph(b.dataset.filter, null);
+    if (b.dataset.color) renderGraph(null, b.dataset.color);
     selectedNode = null;
   });
 });
@@ -2391,47 +2617,57 @@ document.querySelectorAll('.toggle-switch').forEach(sw => {
 // ================================================================
 const TOURS = {
   overview: [
-    { sel: '.tour-launch-btn', title: 'Take a tour', body: 'You can re-run this tour on any tab. Steps change based on where you are.' },
-    { sel: '.section-kpi-strip', title: 'Portfolio KPIs', body: 'YTD actuals vs. the LSO plan, run-rate FY forecast, IRP erosion already baked into current misses, and the net dollar amount you can rebalance across countries.' },
-    { sel: '.insight.crit', title: 'Auto-detected alerts', body: 'GTN scans for off-plan countries and downstream cascade exposure. Every alert links to the tool that fixes it — here, the Reallocation Workbench.' },
-    { sel: '#worldMap', title: 'Country health map', body: 'Every launched country colored by status (on-track / at-risk / off-plan) or variance %. Click a country to see its details in the right rail.' },
-    { sel: '#healthBand', title: 'Portfolio health band', body: 'Revenue distribution across on-track, at-risk, and off-plan countries. A quick read of whether the miss is concentrated or systemic.' },
-    { sel: '.country-panel-name', title: 'Selected-country detail', body: 'The right rail shows YTD plan vs. actuals, launch delta vs. LSO, rate provenance, and which countries reference this one — that\'s the downstream cascade risk.' },
+    { sel: '#pageTitleText', title: 'Overview', body: 'Identify the country dragging global net revenue off plan this quarter, and open the action needed to address it.' },
+    { sel: '.section-kpi-strip', title: 'Portfolio KPIs', body: 'YTD actuals against the LSO plan, run-rate FY forecast, IRP erosion baked into current misses, and the dollar amount available to rebalance across countries.' },
+    { sel: '.insight.crit', title: 'Auto-detected alerts', body: 'Off-plan countries and downstream cascade exposure surface here. Each alert links to the action that resolves it.' },
+    { sel: '#worldMap', title: 'Country health map', body: 'Every launched country colored by status or variance percentage. Click a country to open its detail on the right.' },
+    { sel: '#healthBand', title: 'Portfolio health band', body: 'Revenue distribution across on-track, at-risk, and off-plan countries. Tells you whether a miss is concentrated in one market or spread across the portfolio.' },
+    { sel: '.country-panel-name', title: 'Country detail', body: 'YTD plan vs. actuals for the selected country, launch delta against LSO, rate provenance, and its downstream referencers.' },
   ],
   performance: [
-    { sel: '#perfTable', title: 'Country performance grid', body: 'Every country\'s LSO plan, actuals, variance and FY forecast on a single line. This is the accrual variance table applied to the country dimension.' },
-    { sel: '#perfTable tr.row', title: 'Click a row for details', body: 'A modal opens with full YTD/FY metrics, launch delta, referencing chain, and the option to jump into the Reallocation Workbench for off-plan countries.' },
-    { sel: '#perfTable .spark', title: 'Trend sparkline', body: 'Nine-month momentum by country — spot a country trending down before it slips into off-plan.' },
-    { sel: '#perfTable .btn-primary', title: 'Reallocate action', body: 'Off-plan rows get a primary action. It opens the Workbench pre-focused on that country so you can net the shortfall against upside countries in one click.' },
+    { sel: '#pageTitleText', title: 'Country Performance', body: 'Sort every launched country by variance and open any row to see the full YTD and FY picture plus its referencing chain in one modal.' },
+    { sel: '#perfTable', title: 'Country performance grid', body: 'Each country on one line: LSO plan, actuals, variance, and FY forecast.' },
+    { sel: '#th-mea', title: 'MEA Realization', body: 'Percentage of planned rebate accrual actually earned. A dropping value is usually the first sign a country is slipping.' },
+    { sel: '#th-rate', title: 'Rate provenance', body: 'How each country\'s price is set: IRP-referenced, HTA-negotiated, tender, or free-market. Read from GPM rules, shown here so variance is interpretable.' },
+    { sel: '#perfTable tr.row', title: 'Row detail', body: 'Click any row to open the country modal with full YTD and FY metrics, launch delta, referencing chain, and a shortcut into the Reallocation Workbench.' },
+    { sel: '#perfTable .spark', title: 'Trend sparkline', body: 'Nine months of momentum. Useful for spotting a country trending down before it becomes off-plan.' },
+    { sel: '#perfTable .btn-primary', title: 'Reallocate', body: 'Opens the Workbench pre-focused on this country. Off-plan rows show this action; at-risk rows show Review instead.' },
   ],
   rebalance: [
-    { sel: '.rebal-list', title: 'Shortfall countries', body: 'Every country running below LSO plan. Pick one to see its ranked options — France is the default because it\'s the largest gap.' },
-    { sel: '.action-card', title: 'Ranked action options', body: 'Three approaches: reallocate expected revenue to upside countries, accept the miss and recompute NPV, or renegotiate the MEA to defend list. Each shows the net dollar impact.' },
-    { sel: '.je-preview', title: 'Journal entry preview', body: 'Every action posts an auditable journal entry — same discipline as GTN accrual true-ups, applied to the country dimension.' },
-    { sel: '.action-footer .btn-primary', title: 'Apply & Post', body: 'Commits the adjustment. It writes a journal entry with a full audit trail and stays reversible until the close period locks.' },
+    { sel: '#pageTitleText', title: 'Reallocation Workbench', body: 'Choose one of four ranked actions for a shortfall country (reallocate, accept, renegotiate MEA, or post to LSO) and post an approved true-up before the books lock.' },
+    { sel: '.rebal-list', title: 'Shortfall countries', body: 'Every country running below LSO plan. Pick one to see its ranked options. France is loaded by default because it\'s the largest gap.' },
+    { sel: '.action-card', title: 'Four ranked options', body: 'Reallocate to upside countries, accept the miss, renegotiate the MEA, or post the variance back to LSO. Each shows net impact and an approver.' },
+    { sel: '.action-card:last-of-type .action-tag', title: 'Post to LSO', body: 'The write-back option. Sends the variance upstream so LSO uses the corrected demand curve on its next re-solve, keeping the plan and reality aligned.' },
+    { sel: '.approver-row', title: 'Approver and SLA', body: 'Every action names who signs off and when it needs to post. Applies close-cycle discipline to country-level revenue decisions.' },
+    { sel: '.je-preview', title: 'Journal entry preview', body: 'The accounting posting this action will create. Same audit format as GTN accrual true-ups, applied to the country dimension.' },
+    { sel: '.decision-log-card', title: 'Decision log', body: 'True-ups and write-backs posted this quarter. Full audit trail for every reallocation decision.' },
   ],
   lso: [
-    { sel: '.lseq-body', title: 'LSO Plan vs. Actuals', body: 'This is a tracker, not a planner. Launch dates are computed upstream by GPM-LSO — this view shows how execution is holding against them.' },
-    { sel: '.lseq-bar-plan', title: 'LSO planned window', body: 'The dashed ghost bars are LSO\'s system-calculated launch windows — the plan of record.' },
-    { sel: '.lseq-bar-actual', title: 'Actual / current window', body: 'Solid bars are reality. Green = ahead of plan, red = behind, blue = on plan. The color makes slippage obvious across 20 countries at once.' },
-    { sel: '.today-line', title: 'Today', body: 'The orange vertical line is the current close period (M+9 = September 2026). Everything left of it is history; everything right is projection.' },
-    { sel: '.lseq-diff-cell', title: 'Δ vs. LSO', body: 'For each country, the delta in months and the projected FY revenue impact of the slippage or pull-in. This is the number that flows into IRP erosion.' },
+    { sel: '#pageTitleText', title: 'LSO Plan vs. Actuals', body: 'See where launch execution has slipped against the LSO plan and quantify the FY revenue impact of every month of delay or pull-in.' },
+    { sel: '.lseq-body', title: 'Plan vs. reality', body: 'A tracker, not a planner. Launch dates are set upstream in GPM-LSO. This view shows how execution is holding against them.' },
+    { sel: '#section-lso .card > div:first-child', title: 'Plan version and actuals date', body: 'The specific LSO plan loaded and the date actuals were synced through. Everything below is variance against that baseline.' },
+    { sel: '.lseq-bar-plan', title: 'LSO planned window', body: 'The dashed bars are LSO\'s system-calculated launch windows.' },
+    { sel: '.lseq-bar-actual', title: 'Actual or current window', body: 'Solid bars show reality. Green means ahead of plan, red means behind, blue means on plan. Hover any bar for the exact delta and FY revenue impact.' },
+    { sel: '.today-line', title: 'Today', body: 'The orange line marks the current close period. History is to the left; projection is to the right.' },
+    { sel: '.lseq-diff-cell', title: 'Delta vs. LSO', body: 'The month-delta and projected FY revenue impact per country. Feeds directly into Projected Erosion.' },
   ],
   erosion: [
-    { sel: '.narrative', title: 'Erosion narrative', body: 'A plain-language summary of the projected erosion given current demand. This is auto-generated from the actuals-vs-plan gap in source countries.' },
-    { sel: '.erosion-mode-toggle', title: 'Forecast vs. Stress-test', body: 'Default projects erosion from current YTD demand shortfalls — answers "how much is already at risk". Stress-test lets you simulate a hypothetical payer cut instead.' },
-    { sel: '#cascadeSvg', title: 'IRP cascade waterfall', body: 'Watch a price change in the source country propagate through the referencing graph. Each downstream country reprices at its basket weight — that weight comes from real reference rules.' },
-    { sel: '#cascadeTimeline', title: 'Cumulative erosion timeline', body: 'Month-by-month leakage over the next 24 months. The dots mark when each country\'s referencing cycle triggers — planning depends on knowing when, not just how much.' },
+    { sel: '#pageTitleText', title: 'Projected Erosion', body: 'Read the dollar and month impact of current shortfalls cascading through referenced markets over the next 24 months, so downstream leakage is priced in before it hits.' },
+    { sel: '.narrative', title: 'Erosion narrative', body: 'A plain-language summary of the erosion projected from current demand. Regenerated automatically as actuals refresh.' },
+    { sel: '#cascadeSvg', title: 'IRP cascade waterfall', body: 'How current shortfalls propagate through the referencing graph. Each downstream country reprices at its basket weight using real reference rules from GPM.' },
+    { sel: '#cascadeTimeline', title: 'Cumulative erosion timeline', body: 'Month-by-month leakage over the next 24 months. Dots mark when each country\'s referencing cycle triggers.' },
   ],
   graph: [
-    { sel: '.filter-picker', title: 'Region filter', body: 'Isolate the network to EU / OECD / GCC to see cascade exposure within a market cluster. GCC in particular has the largest inbound edges because Saudi and UAE reference broad country baskets.' },
-    { sel: '#graphSvg', title: 'The referencing network', body: 'Hover a country to see inbound edges (red = referenced BY this country, meaning cascade risk to it) and outbound edges (blue = this country references others).' },
-    { sel: '.graph-legend', title: 'What the colors mean', body: 'Node size is proportional to forecasted revenue; color matches the country\'s current status. Big red nodes are the countries where a miss cascades hardest.' },
+    { sel: '#pageTitleText', title: 'Referencing Graph', body: 'Switch to Live Cascade Exposure to see at a glance which countries are absorbing pressure from today\'s shortfalls, before the erosion actually posts.' },
+    { sel: '#graphColorMode', title: 'Live cascade exposure', body: 'This mode colors nodes by how much cascade pressure they receive from your current shortfalls. Red-outlined nodes are the sources; heat downstream shows where erosion is landing today.' },
+    { sel: '.graph-filter-row .filter-picker:first-child', title: 'Region filter', body: 'Narrow the network to EU, OECD, or GCC to focus on one market cluster. GCC shows the largest inbound edges because Saudi and UAE reference broad country baskets.' },
+    { sel: '#graphSvg', title: 'The network', body: 'Hover a country to see inbound edges in red (countries whose price depends on this one) and outbound edges in blue (countries this one references).' },
+    { sel: '.graph-legend', title: 'Colors and sizes', body: 'Node size is proportional to forecasted revenue. In exposure mode, color reflects cascade pressure from today\'s shortfalls, not a hypothetical scenario.' },
   ],
   config: [
-    { sel: '#ruleTable', title: 'Country reference rules', body: 'Basket definitions per country — the substrate everything else is built on. A stale rule here silently distorts every forecast and true-up downstream.' },
-    { sel: '#ruleTable td .basket-rule', title: 'Basket rule syntax', body: 'For example "mean(3 lowest EU)" means Greece\'s price is set from the three lowest EU list prices. Rules change 2–3 times per year per country.' },
-    { sel: '.toggle-row', title: 'Policy toggles', body: 'Regulatory switches that reshape the network — US MFN flips the US into IRP-derived pricing; EU JCA changes the HTA path; MEA confidential mode governs whether cascades run on list or net.' },
+    { sel: '#pageTitleText', title: 'Configuration', body: 'Flip the four policy switches (MFN, JCA, MEA confidential mode, auto-post) to match your org\'s close-cycle discipline and current regulatory posture.' },
+    { sel: '.toggle-row', title: 'Policy toggles', body: 'Regulatory switches that reshape tracking: US MFN flips the US into IRP-derived pricing, EU JCA changes HTA timing, MEA confidential mode governs whether cascades run on list or net.' },
+    { sel: '.toggle-row:last-child', title: 'Auto-post true-ups', body: 'When on, country-level accrual adjustments post monthly from variance. When off, every reallocation goes through a review-and-approve gate first.' },
   ],
 };
 
@@ -2638,5 +2874,6 @@ renderMap();
 renderHealthBand();
 renderCountryPanel('FR');
 </script>
+
 
 </body></html>
