@@ -1,0 +1,2885 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Model N Global GTN</title>
+<style>
+  :root {
+    --nav-bg: #0A2540;
+    --nav-bg-2: #14335a;
+    --nav-text: #ffffff;
+    --nav-text-muted: rgba(255,255,255,.60);
+    --nav-hover: rgba(255,255,255,.08);
+    --nav-active-bg: rgba(30,108,210,.22);
+    --nav-active-border: #4A90E2;
+    --nav-section: rgba(255,255,255,.42);
+
+    --ink: #0F2240;
+    --ink-2: #34405c;
+    --muted: #67728A;
+    --muted-2: #9AA3B4;
+
+    --surface: #ffffff;
+    --surface-2: #F7F8FA;
+    --surface-3: #EDF0F4;
+    --page-bg: #F4F6F9;
+
+    --border: #E1E5EB;
+    --border-strong: #C1C7D2;
+
+    --brand: #1E6CD2;
+    --brand-hover: #144E9C;
+    --brand-soft: #E6F0FC;
+    --brand-ink: #144E9C;
+
+    --deduction: #DC4A48;
+    --deduction-soft: #FDEAEA;
+    --deduction-ink: #A6362F;
+
+    --net: #1FA37E;
+    --net-soft: #E1F5EE;
+    --net-ink: #157558;
+
+    --orange: #EA8862;
+    --orange-soft: #FCE8DC;
+    --orange-ink: #B85A2E;
+
+    --good: #1FA37E;
+    --good-soft: #E1F5EE;
+    --good-ink: #157558;
+    --warn: #D97706;
+    --warn-soft: #FEF3C7;
+    --warn-ink: #B45309;
+    --crit: #DC4A48;
+    --crit-soft: #FDEAEA;
+    --crit-ink: #A6362F;
+    --neutral-pill: #E5E7EB;
+    --neutral-ink: #4B5563;
+
+    --col-highlight: #FDF1E7;
+
+    --sans: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --mono: "SF Mono", "Consolas", ui-monospace, "Menlo", monospace;
+
+    --radius: 4px;
+    --radius-lg: 6px;
+    --shadow: 0 1px 0 rgba(10,37,64,.04);
+    --shadow-lg: 0 4px 14px rgba(10,37,64,.07);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--page-bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+
+  /* -------- Left nav -------- */
+  .nav {
+    background: var(--nav-bg); color: var(--nav-text);
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .nav-brand {
+    padding: 22px 22px 24px;
+    display: flex; align-items: baseline; gap: 4px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .nav-brand .model { font-size: 22px; font-weight: 300; color: #fff; letter-spacing: -0.01em; }
+  .nav-brand .n { font-size: 22px; font-weight: 700; color: var(--brand); letter-spacing: -0.02em; }
+  .nav-product {
+    padding: 16px 22px 24px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .nav-product-name { font-size: 15px; font-weight: 600; color: #fff; }
+  .nav-product-sub { font-size: 11px; color: var(--nav-text-muted); margin-top: 2px; }
+  .nav-body { padding: 12px 10px; flex: 1; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+  .nav-section {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--nav-section); padding: 14px 12px 6px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 12px; border-radius: var(--radius);
+    color: var(--nav-text); font-size: 13px; cursor: pointer; user-select: none;
+    border-left: 2px solid transparent; margin-left: -2px;
+  }
+  .nav-item:hover { background: var(--nav-hover); }
+  .nav-item.active {
+    background: var(--nav-active-bg);
+    border-left-color: var(--nav-active-border); font-weight: 600;
+  }
+  .nav-item.disabled { color: var(--nav-text-muted); cursor: default; }
+  .nav-item.disabled:hover { background: transparent; }
+  .nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: .85; }
+  .nav-item.active .nav-icon { opacity: 1; }
+  .nav-item .external-badge {
+    margin-left: auto; font-size: 9px; padding: 1px 6px;
+    background: rgba(255,255,255,.12); border-radius: 2px;
+    letter-spacing: 0.06em; font-weight: 600;
+  }
+  .nav-footer {
+    padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.06);
+    font-size: 12px; color: var(--nav-text-muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--brand); color: #fff;
+    display: grid; place-items: center; font-size: 11px; font-weight: 600;
+  }
+
+  .main { min-width: 0; background: var(--page-bg); }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 28px; border-bottom: 1px solid var(--border);
+    gap: 24px; background: var(--surface);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; min-width: 0; }
+  .breadcrumb-context {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  .period-picker {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-size: 13px; cursor: pointer; color: var(--ink);
+  }
+  .period-picker:hover { border-color: var(--border-strong); }
+  .period-picker .caret { color: var(--muted); font-size: 10px; }
+  .status-line { color: var(--muted); font-size: 12px; }
+  .status-line b { color: var(--ink); font-weight: 600; }
+
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .btn {
+    padding: 7px 14px; border-radius: var(--radius);
+    border: 1px solid var(--border-strong); background: var(--surface);
+    color: var(--ink); font-size: 13px; cursor: pointer;
+    font-family: inherit; font-weight: 500;
+  }
+  .btn:hover { background: var(--surface-2); border-color: var(--muted-2); }
+  .btn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-hover); border-color: var(--brand-hover); }
+
+  .page-title {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 18px 28px; display: flex; align-items: center; gap: 14px;
+  }
+  .page-icon {
+    width: 40px; height: 40px; border-radius: var(--radius);
+    background: var(--orange-soft); color: var(--orange-ink);
+    display: grid; place-items: center;
+  }
+  .page-icon svg { width: 22px; height: 22px; }
+  .page-title-text {
+    font-size: 24px; font-weight: 700; color: var(--ink);
+    letter-spacing: -0.02em; margin: 0;
+  }
+  .state-pill {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border: 1px solid currentColor;
+    border-radius: 3px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; background: transparent;
+  }
+  .state-pill.live { color: var(--net-ink); background: var(--net-soft); }
+  .state-pill.draft { color: var(--warn-ink); background: var(--warn-soft); }
+  .state-pill.tracking { color: var(--brand-ink); background: var(--brand-soft); }
+  .page-title-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  .section-kpi-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    padding: 16px 28px 20px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .kpi-tile {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 14px 16px; position: relative;
+  }
+  .kpi-tile.accent {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--brand-soft) 140%);
+    border-color: var(--brand);
+  }
+  .kpi-tile-label {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700;
+  }
+  .kpi-tile.accent .kpi-tile-label { color: var(--brand-ink); }
+  .kpi-tile-value {
+    font-size: 24px; font-weight: 700; color: var(--ink);
+    margin-top: 4px; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em; line-height: 1.15;
+  }
+  .kpi-tile-value .unit { font-size: 0.55em; font-weight: 700; color: var(--muted); margin-left: 1px; }
+  .kpi-tile-sub { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .kpi-tile-sub b { color: var(--ink); font-weight: 600; }
+  .kpi-delta { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; }
+  .kpi-delta.down { color: var(--good-ink); }
+  .kpi-delta.up { color: var(--deduction-ink); }
+  .kpi-delta.warn { color: var(--warn-ink); }
+  .kpi-delta.bad { color: var(--deduction-ink); }
+
+  .body { padding: 20px 28px 40px; }
+  .body-grid { display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 20px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .card-head {
+    padding: 12px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--surface);
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .card-title .sub { color: var(--muted); font-weight: 400; margin-left: 6px; }
+  .card-body { padding: 16px 18px; }
+
+  .insight {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 14px 18px; border-radius: var(--radius);
+    margin-bottom: 18px; font-size: 13px;
+  }
+  .insight.warn { background: var(--warn-soft); border-left: 3px solid var(--warn); color: var(--warn-ink); }
+  .insight.crit { background: var(--deduction-soft); border-left: 3px solid var(--deduction); color: var(--deduction-ink); }
+  .insight-mark {
+    width: 20px; height: 20px; border-radius: 50%;
+    color: #fff; display: grid; place-items: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .insight.warn .insight-mark { background: var(--warn); }
+  .insight.crit .insight-mark { background: var(--deduction); }
+  .insight b { color: var(--ink); }
+  .insight-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .insight-btn {
+    padding: 4px 10px; background: #fff;
+    border: 1px solid currentColor; border-radius: 3px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+  }
+  .insight.warn .insight-btn { color: var(--warn-ink); }
+  .insight.crit .insight-btn { color: var(--deduction-ink); }
+  .insight-btn:hover { background: currentColor; }
+  .insight-btn:hover { color: #fff !important; }
+
+  /* Sits-on-top-of GPM-LSO note */
+  .lso-note {
+    display: flex; gap: 10px; align-items: center;
+    padding: 10px 14px; background: var(--surface-2);
+    border: 1px dashed var(--border-strong); border-radius: var(--radius);
+    margin-bottom: 16px; font-size: 12px; color: var(--ink-2);
+  }
+  .lso-note-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; background: var(--nav-bg); color: #fff;
+    border-radius: 3px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .lso-note b { color: var(--ink); }
+
+  /* Choropleth */
+  .map-wrap { padding: 16px 18px; }
+  .map-svg { width: 100%; height: 380px; display: block; }
+  .map-svg .country { cursor: pointer; stroke: #fff; stroke-width: 1; transition: opacity .12s; }
+  .map-svg .country:hover { opacity: .82; }
+  .map-svg .country.selected { stroke: var(--brand); stroke-width: 2.5; }
+  .map-svg .country-label {
+    fill: var(--ink); font-size: 9.5px; font-weight: 600;
+    font-family: var(--sans); pointer-events: none;
+  }
+  .map-svg .country-label.dark { fill: #fff; }
+  .map-legend {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 18px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted); font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .legend-scale { display: flex; align-items: center; height: 10px; flex: 1; max-width: 260px; border-radius: 2px; overflow: hidden; }
+  .legend-scale span { flex: 1; height: 100%; }
+
+  /* Portfolio health bar (overview) */
+  .health-band {
+    display: flex; gap: 2px;
+    height: 34px; border-radius: 3px; overflow: hidden;
+    margin: 10px 0 6px;
+  }
+  .health-band .seg {
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.02em; padding: 0 8px; min-width: 60px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .health-band .seg.ok { background: var(--net); }
+  .health-band .seg.risk { background: var(--warn); }
+  .health-band .seg.off { background: var(--deduction); }
+  .health-band-legend { display: flex; gap: 14px; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .health-band-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+
+  /* Country panel (right rail) */
+  .rail { display: flex; flex-direction: column; gap: 16px; }
+  .country-panel-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .price-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 8px;
+    padding: 8px 0; border-bottom: 1px dashed var(--border);
+    font-size: 13px; align-items: baseline;
+  }
+  .price-row:last-child { border-bottom: 0; }
+  .price-key { color: var(--muted); }
+  .price-value { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
+  .price-value.net { color: var(--net-ink); font-weight: 700; }
+  .price-value.pos { color: var(--net-ink); font-weight: 700; }
+  .price-value.neg { color: var(--deduction-ink); font-weight: 700; }
+  .provenance-pill {
+    display: inline-block; padding: 2px 7px; border-radius: 3px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .provenance-pill.irp { background: var(--brand-soft); color: var(--brand-ink); }
+  .provenance-pill.hta { background: var(--orange-soft); color: var(--orange-ink); }
+  .provenance-pill.tender { background: var(--warn-soft); color: var(--warn-ink); }
+  .provenance-pill.list { background: var(--neutral-pill); color: var(--neutral-ink); }
+  .provenance-pill.mea { background: var(--net-soft); color: var(--net-ink); }
+
+  /* Status pill */
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 3px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+  }
+  .status-pill::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+  }
+  .status-pill.ok { background: var(--net-soft); color: var(--net-ink); }
+  .status-pill.risk { background: var(--warn-soft); color: var(--warn-ink); }
+  .status-pill.off { background: var(--deduction-soft); color: var(--deduction-ink); }
+  .status-pill.pending { background: var(--neutral-pill); color: var(--neutral-ink); }
+  .status-pill.launched { background: var(--brand-soft); color: var(--brand-ink); }
+
+  /* Country Performance table */
+  .perf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .perf-table th {
+    text-align: left; padding: 10px 14px; font-size: 11px;
+    font-weight: 600; color: var(--ink-2); letter-spacing: 0.04em;
+    text-transform: uppercase; border-bottom: 1px solid var(--border);
+    background: var(--surface-3); white-space: nowrap;
+  }
+  .perf-table th.num, .perf-table td.num { text-align: right; }
+  .perf-table td {
+    padding: 11px 14px; border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .perf-table tr.row:hover td { background: var(--brand-soft); cursor: pointer; }
+  .perf-table tr.row.selected td { background: var(--brand-soft); }
+  .perf-table td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .var-pos { color: var(--net-ink); font-weight: 600; }
+  .var-neg { color: var(--deduction-ink); font-weight: 600; }
+  .country-cell {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .country-code {
+    font-family: var(--mono); font-size: 11px; color: var(--brand-ink);
+    background: var(--brand-soft); padding: 2px 6px; border-radius: 3px;
+    width: 30px; text-align: center; font-weight: 600;
+  }
+  .country-name { font-weight: 600; color: var(--ink); }
+  .country-region { color: var(--muted); font-size: 11px; margin-top: 1px; }
+
+  /* Sparkline */
+  .spark {
+    display: inline-block; vertical-align: middle;
+  }
+  .spark svg { display: block; }
+
+  /* Reallocation Workbench */
+  .rebal-body {
+    display: grid; grid-template-columns: 300px 1fr; gap: 20px;
+    align-items: start;
+  }
+  .rebal-list {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+  }
+  .rebal-list-head {
+    padding: 10px 14px; background: var(--surface-3);
+    border-bottom: 1px solid var(--border); font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700;
+  }
+  .rebal-country {
+    display: grid; grid-template-columns: 1fr auto;
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    cursor: pointer; align-items: center; gap: 8px;
+  }
+  .rebal-country:hover { background: var(--brand-soft); }
+  .rebal-country.selected { background: var(--brand-soft); border-left: 3px solid var(--brand); padding-left: 11px; }
+  .rebal-country:last-child { border-bottom: 0; }
+  .rebal-country-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .rebal-country-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .rebal-var { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+
+  .action-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow);
+    margin-bottom: 14px; overflow: hidden;
+  }
+  .action-card-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .action-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 3px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .action-tag.rebal { background: var(--brand-soft); color: var(--brand-ink); }
+  .action-tag.accept { background: var(--warn-soft); color: var(--warn-ink); }
+  .action-tag.negotiate { background: var(--net-soft); color: var(--net-ink); }
+  .action-tag.writeback { background: var(--orange-soft); color: var(--orange-ink); }
+
+  .approver-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 12px; margin-top: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); font-size: 11.5px;
+  }
+  .approver-row .approver-label {
+    font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700;
+  }
+  .approver-row .approver-name {
+    color: var(--ink); font-weight: 600;
+  }
+  .approver-row .approver-avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--brand-soft); color: var(--brand-ink);
+    display: grid; place-items: center; font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .approver-row .approver-sla {
+    margin-left: auto; font-size: 11px; color: var(--muted); font-style: italic;
+  }
+
+  .decision-log-card { margin-top: 24px; }
+  .decision-log-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .decision-log-table th {
+    text-align: left; padding: 9px 14px; font-size: 10.5px;
+    font-weight: 700; color: var(--ink-2); letter-spacing: 0.06em;
+    text-transform: uppercase; border-bottom: 1px solid var(--border);
+    background: var(--surface-3);
+  }
+  .decision-log-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+  .decision-log-table tr:last-child td { border-bottom: 0; }
+  .decision-log-table tr:hover td { background: var(--surface-2); }
+  .decision-log-table .log-id {
+    font-family: var(--mono); font-size: 11px; color: var(--brand-ink); font-weight: 600;
+  }
+  .decision-log-table .log-status {
+    display: inline-block; padding: 2px 8px; border-radius: 3px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  }
+  .decision-log-table .log-status.posted { background: var(--net-soft); color: var(--net-ink); }
+  .decision-log-table .log-status.pending { background: var(--warn-soft); color: var(--warn-ink); }
+  .action-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .action-impact-label {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700; text-align: right;
+  }
+  .action-impact-val {
+    font-family: var(--mono); font-size: 20px; font-weight: 700;
+    color: var(--net-ink); text-align: right; margin-top: 2px;
+    letter-spacing: -0.02em;
+  }
+  .action-impact-val.neg { color: var(--deduction-ink); }
+  .action-body { padding: 14px 18px; }
+  .action-desc { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin-bottom: 10px; }
+
+  .je-preview {
+    background: var(--surface-2); border-radius: var(--radius);
+    padding: 10px 12px; font-family: var(--mono); font-size: 11.5px;
+    color: var(--ink-2); line-height: 1.7;
+  }
+  .je-preview .je-label {
+    color: var(--muted); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; font-weight: 700;
+    font-family: var(--sans); margin-bottom: 4px; display: block;
+  }
+  .je-preview .je-row {
+    display: grid; grid-template-columns: 90px 1fr auto auto; gap: 8px;
+  }
+  .je-preview .je-row .pos { color: var(--net-ink); }
+  .je-preview .je-row .neg { color: var(--deduction-ink); }
+
+  .action-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px; border-top: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .action-audit {
+    font-size: 11px; color: var(--muted);
+  }
+  .action-audit b { color: var(--ink); font-weight: 600; }
+
+  /* LSO Gantt (reframed as tracker) */
+  .lseq-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border);
+    background: var(--surface-2); flex-wrap: wrap;
+  }
+  .lseq-body { padding: 16px 18px; overflow-x: auto; }
+  .lseq-timeline-head {
+    display: grid; grid-template-columns: repeat(36, 1fr);
+    border-bottom: 1px solid var(--border); background: var(--surface-2);
+    font-size: 10px; color: var(--muted); font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .lseq-month {
+    text-align: center; padding: 6px 0;
+    border-right: 1px solid var(--border);
+  }
+  .lseq-quarter-marker { background: var(--surface-3); }
+  .lseq-country-cell {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface);
+  }
+  .wave-tag {
+    font-size: 9px; padding: 1px 6px; border-radius: 2px;
+    background: var(--surface-3); color: var(--ink-2);
+    font-weight: 700; letter-spacing: 0.06em;
+  }
+  .wave-tag.w1 { background: var(--net-soft); color: var(--net-ink); }
+  .wave-tag.w2 { background: var(--warn-soft); color: var(--warn-ink); }
+  .wave-tag.w3 { background: var(--deduction-soft); color: var(--deduction-ink); }
+  .lseq-timeline-cell {
+    border-bottom: 1px solid var(--border);
+    position: relative; height: 46px;
+    background-image: repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(100% / 36 - 1px),
+      var(--border) calc(100% / 36 - 1px),
+      var(--border) calc(100% / 36)
+    );
+  }
+  .lseq-diff-cell {
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    font-size: 12px; font-family: var(--mono); font-variant-numeric: tabular-nums;
+    text-align: right; background: var(--surface);
+  }
+  .lseq-diff-cell.ahead { color: var(--net-ink); }
+  .lseq-diff-cell.behind { color: var(--deduction-ink); }
+  .lseq-diff-cell.on { color: var(--muted); }
+  .lseq-diff-cell.pending { color: var(--muted-2); font-style: italic; }
+  .lseq-diff-cell .diff-sub {
+    font-size: 10px; color: var(--muted); font-family: var(--sans);
+    letter-spacing: 0.02em; margin-top: 1px; font-style: normal;
+  }
+  .lseq-bar-plan {
+    position: absolute; top: 8px; height: 14px;
+    background: transparent; border: 1.5px dashed var(--muted-2);
+    border-radius: 3px;
+    display: flex; align-items: center; padding: 0 8px;
+    color: var(--muted); font-size: 9px; font-weight: 600;
+  }
+  .lseq-bar-actual {
+    position: absolute; top: 24px; height: 16px;
+    background: var(--brand); border-radius: 3px;
+    display: flex; align-items: center; padding: 0 8px;
+    color: #fff; font-size: 10px; font-weight: 600;
+    box-shadow: 0 1px 2px rgba(10,37,64,.15);
+  }
+  .lseq-bar-actual.ahead { background: var(--net); }
+  .lseq-bar-actual.behind { background: var(--deduction); }
+  .lseq-bar-actual.on { background: var(--brand); }
+  .lseq-milestone {
+    position: absolute; top: 4px;
+    width: 10px; height: 10px;
+    background: var(--nav-bg); transform: rotate(45deg);
+    border: 1.5px solid #fff;
+  }
+  .today-line {
+    position: absolute; top: 0; bottom: 0;
+    width: 2px; background: var(--orange);
+    z-index: 3; pointer-events: none;
+  }
+  .today-line::before {
+    content: "TODAY"; position: absolute;
+    top: -14px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; color: var(--orange-ink);
+    font-weight: 700; letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  /* IRP Erosion Forecast */
+  .erosion-mode-toggle {
+    display: inline-flex; background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 2px;
+  }
+  .erosion-mode-toggle button {
+    padding: 5px 12px; border: 0; background: transparent;
+    color: var(--muted); border-radius: 3px; font-family: inherit;
+    font-size: 12px; cursor: pointer; font-weight: 500;
+  }
+  .erosion-mode-toggle button.active {
+    background: var(--brand); color: #fff; font-weight: 600;
+  }
+  .stress-controls {
+    display: none; padding: 16px 18px; align-items: center; gap: 20px;
+    border-top: 1px solid var(--border); background: var(--surface-2);
+  }
+  .stress-controls.active { display: flex; }
+  .cascade-svg { width: 100%; height: 480px; display: block; }
+  .cascade-svg .connector { stroke: var(--border-strong); stroke-dasharray: 3 3; fill: none; }
+  .cascade-svg .country-label { fill: var(--ink-2); font-family: var(--sans); font-size: 11px; font-weight: 500; }
+  .cascade-svg .value-label { fill: var(--ink); font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .cascade-svg .delta-label { fill: var(--deduction-ink); font-family: var(--mono); font-size: 10px; font-weight: 700; }
+  .cascade-svg .gridline { stroke: var(--border); stroke-dasharray: 2 4; }
+  .cascade-svg .axis-tick { fill: var(--muted); font-family: var(--mono); font-size: 10px; }
+  .cascade-svg .rule-label { fill: var(--muted); font-family: var(--sans); font-size: 9.5px; font-style: italic; }
+  .cascade-timeline-svg { width: 100%; height: 220px; display: block; }
+
+  /* Referencing Graph */
+  .graph-svg { width: 100%; height: 620px; display: block; background: #fbfcfd; }
+  .graph-svg .edge { stroke: var(--muted-2); stroke-opacity: 0.5; fill: none; }
+  .graph-svg .edge.highlight { stroke: var(--brand); stroke-opacity: 1; stroke-width: 2.5; }
+  .graph-svg .edge.outbound { stroke: var(--deduction); stroke-opacity: 1; stroke-width: 2.5; }
+  .graph-svg .node { cursor: pointer; }
+  .graph-svg .node circle { stroke: #fff; stroke-width: 2; transition: stroke .12s; }
+  .graph-svg .node.hover circle, .graph-svg .node.selected circle { stroke: var(--brand); stroke-width: 3; }
+  .graph-svg .node text { fill: var(--ink); font-size: 10px; font-family: var(--sans); font-weight: 600; text-anchor: middle; pointer-events: none; }
+  .graph-legend {
+    display: flex; gap: 20px; padding: 12px 18px;
+    border-top: 1px solid var(--border); background: var(--surface-2);
+    font-size: 12px; color: var(--muted); align-items: center;
+  }
+  .graph-legend .swatch {
+    display: inline-block; width: 14px; height: 3px; margin-right: 6px; vertical-align: 2px;
+  }
+  .graph-filter-row {
+    display: flex; gap: 8px; padding: 12px 18px;
+    border-bottom: 1px solid var(--border); align-items: center;
+  }
+  .filter-picker {
+    display: inline-flex; background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 2px;
+  }
+  .filter-picker button {
+    padding: 5px 12px; border: 0; background: transparent;
+    color: var(--muted); border-radius: 3px; font-family: inherit;
+    font-size: 12px; cursor: pointer; font-weight: 500;
+  }
+  .filter-picker button.active {
+    background: var(--brand); color: #fff; font-weight: 600;
+  }
+
+  /* Configuration */
+  .config-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .config-table th {
+    text-align: left; padding: 10px 14px; font-size: 11px;
+    font-weight: 600; color: var(--ink-2); letter-spacing: 0.04em;
+    text-transform: uppercase; border-bottom: 1px solid var(--border);
+    background: var(--surface-3);
+  }
+  .config-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  .config-table tr:hover td { background: var(--surface-2); }
+  .config-table .basket-rule { font-family: var(--mono); font-size: 12px; color: var(--brand-ink); }
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+  }
+  .toggle-row:last-child { border-bottom: 0; }
+  .toggle-info .toggle-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .toggle-info .toggle-desc { font-size: 12px; color: var(--muted); margin-top: 2px; max-width: 640px; }
+  .toggle-switch {
+    position: relative; width: 44px; height: 24px;
+    background: var(--surface-3); border: 1px solid var(--border-strong);
+    border-radius: 12px; cursor: pointer; transition: background .15s;
+    flex-shrink: 0;
+  }
+  .toggle-switch::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    transition: left .15s;
+  }
+  .toggle-switch.on { background: var(--brand); border-color: var(--brand); }
+  .toggle-switch.on::after { left: 22px; }
+
+  /* Tooltip */
+  .tt {
+    position: fixed; pointer-events: none;
+    background: var(--nav-bg); color: #fff;
+    padding: 8px 12px; border-radius: 6px;
+    font-size: 12px; line-height: 1.45; max-width: 280px;
+    box-shadow: 0 6px 20px rgba(10,37,64,.25);
+    opacity: 0; transform: translate(-50%, -100%) translateY(-8px);
+    transition: opacity .08s; z-index: 100;
+  }
+  .tt.visible { opacity: 1; }
+  .tt .tt-title { font-weight: 700; font-size: 12.5px; margin-bottom: 4px; }
+  .tt .tt-body { color: rgba(255,255,255,.85); }
+
+  .app-section { display: none; }
+  .app-section.active { display: block; }
+
+  /* -------- Guided Tour -------- */
+  .tour-overlay { display: none; position: fixed; inset: 0; z-index: 500; pointer-events: none; }
+  .tour-overlay.active { display: block; pointer-events: auto; }
+  .tour-spot {
+    position: fixed; border-radius: 6px;
+    box-shadow: 0 0 0 4px rgba(30,108,210,.9), 0 0 0 9999px rgba(10,37,64,.62);
+    pointer-events: none; z-index: 501;
+    transition: top .28s cubic-bezier(.4,0,.2,1), left .28s cubic-bezier(.4,0,.2,1), width .28s, height .28s;
+  }
+  .tour-pop {
+    position: fixed; width: 340px; z-index: 502;
+    background: #fff; border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    padding: 18px 20px; transition: top .28s, left .28s;
+  }
+  .tour-pop-tag {
+    display: inline-block; padding: 2px 8px;
+    background: var(--brand-soft); color: var(--brand-ink);
+    border-radius: 3px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .tour-pop-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .tour-pop-body { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin-bottom: 14px; }
+  .tour-pop-actions { display: flex; justify-content: space-between; align-items: center; }
+  .tour-pop-step { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; font-weight: 600; }
+  .tour-pop-btns { display: flex; gap: 6px; }
+  .tour-pop-btns .btn { padding: 5px 12px; font-size: 12px; }
+
+  /* -------- Modal -------- */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 400;
+    background: rgba(10,37,64,.55);
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: #fff; border-radius: 8px;
+    width: min(760px, 96vw); max-height: 88vh; overflow: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  }
+  .modal-head {
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 16px; position: sticky; top: 0; background: #fff; z-index: 1;
+  }
+  .modal-title {
+    font-size: 22px; font-weight: 700; color: var(--ink);
+    letter-spacing: -0.015em; margin: 0;
+  }
+  .modal-subtitle { font-size: 12px; color: var(--muted); margin-top: 4px; display: flex; gap: 10px; align-items: center; }
+  .modal-close {
+    background: transparent; border: 0; font-size: 26px;
+    color: var(--muted); cursor: pointer; line-height: 1; padding: 0 6px;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 14px 24px; border-top: 1px solid var(--border);
+    background: var(--surface-2); display: flex; justify-content: flex-end; gap: 8px;
+    position: sticky; bottom: 0;
+  }
+  .modal-metric-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px;
+  }
+  .modal-metric {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 12px 14px;
+  }
+  .modal-metric-label {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700;
+  }
+  .modal-metric-value {
+    font-size: 22px; font-weight: 700; color: var(--ink);
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em; margin-top: 4px;
+  }
+  .modal-metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .modal-section-title {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700; margin: 18px 0 8px;
+  }
+
+  .exposed-row {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: 10px; padding: 8px 0; align-items: baseline;
+    border-bottom: 1px dashed var(--border); font-size: 12px;
+  }
+  .exposed-row:last-child { border-bottom: 0; }
+  .exposed-name { color: var(--ink); font-weight: 500; }
+  .exposed-when { font-size: 10px; color: var(--muted); font-family: var(--mono); }
+  .exposed-delta { color: var(--deduction-ink); font-weight: 700; font-family: var(--mono); }
+
+  .narrative {
+    background: linear-gradient(to right, var(--surface), var(--brand-soft) 200%);
+    border: 1px solid var(--brand); border-left: 4px solid var(--brand);
+    border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .narrative-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 8px; background: var(--brand); color: #fff;
+    border-radius: 3px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .narrative-body {
+    font-size: 14px; color: var(--ink); line-height: 1.6;
+    margin-top: 8px;
+  }
+  .narrative-body b { font-weight: 700; }
+  .narrative-body .risk { color: var(--deduction-ink); font-weight: 700; }
+  .narrative-body .opp { color: var(--net-ink); font-weight: 700; }
+
+</style>
+
+<div class="app">
+  <aside class="nav">
+    <div class="nav-brand">
+      <span class="model">model</span><span class="n">N</span>
+    </div>
+    <div class="nav-product">
+      <div class="nav-product-name">Global GTN</div>
+      <div class="nav-product-sub">Ex-US actuals · variance · reallocation</div>
+    </div>
+    <div class="nav-body">
+      <div class="nav-section">Tracking</div>
+      <div class="nav-item active" data-section="overview">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" data-section="performance">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+        Country Performance
+      </div>
+      <div class="nav-item" data-section="rebalance">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10l-3-3M17 17H7l3 3"/><rect x="3" y="10" width="4" height="4"/><rect x="17" y="10" width="4" height="4"/></svg>
+        Reallocation Workbench
+      </div>
+      <div class="nav-section">Plan vs. Reality</div>
+      <div class="nav-item" data-section="lso">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M3 12h18M3 19h18"/><circle cx="7" cy="5" r="1.5" fill="currentColor"/><circle cx="14" cy="12" r="1.5" fill="currentColor"/><circle cx="18" cy="19" r="1.5" fill="currentColor"/></svg>
+        LSO Plan vs. Actuals
+      </div>
+      <div class="nav-item" data-section="erosion">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M6 20V10M12 20V4M18 20V14"/></svg>
+        Projected Erosion
+      </div>
+      <div class="nav-item" data-section="graph">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8v8M18 8v8M8 6h8M8 18h8"/></svg>
+        Referencing Graph
+      </div>
+      <div class="nav-section">Settings</div>
+      <div class="nav-item" data-section="config">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configuration
+      </div>
+      <div class="nav-section">Upstream</div>
+      <div class="nav-item disabled">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/></svg>
+        GPM &amp; LSO <span class="external-badge">EXT</span>
+      </div>
+      <div class="nav-item disabled">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg>
+        Tender Pricing <span class="external-badge">V1</span>
+      </div>
+    </div>
+    <div class="nav-footer">
+      <div class="avatar">CY</div>
+      <div>Candice Young</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="breadcrumb-context">Product</div>
+          <div style="font-weight:600;color:var(--ink);font-size:13px;">OncoMab-X <span style="color:var(--muted);font-weight:400;">· mBRCA, 2L · in-market</span></div>
+        </div>
+        <div class="period-picker" title="Switch reporting period. All actuals, variance and forecasts recompute for the selected close cycle. Matters because true-ups and reallocation decisions are period-scoped.">
+          <span>FY2026 · Q3 close · YTD through Sep</span>
+          <span class="caret">▼</span>
+        </div>
+        <div class="status-line">LSO plan v3.2 · <b style="color:var(--brand-ink);">ex-US actuals</b> through 2026-09-24 · <b>7</b> live · <b style="color:var(--warn-ink);">3 off-plan</b></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn tour-launch-btn" onclick="startTour()"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;text-align:center;line-height:16px;font-size:11px;font-weight:700;margin-right:6px;vertical-align:-3px;">?</span>Take a tour</button>
+        <button class="btn">Export</button>
+        <button class="btn btn-primary">Post True-up</button>
+      </div>
+    </div>
+
+    <div class="page-title">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <h1 class="page-title-text" id="pageTitleText">Overview</h1>
+          <span class="state-pill tracking">Tracking · FY26 Q3</span>
+        </div>
+        <div class="page-title-sub">Actuals · variance · reallocation layer on top of GPM-LSO plan · last refresh 2026-09-24 14:22 UTC</div>
+      </div>
+    </div>
+
+    <!-- ============ OVERVIEW ============ -->
+    <section id="section-overview" class="app-section active">
+      <div class="section-kpi-strip">
+        <div class="kpi-tile accent">
+          <div class="kpi-tile-label">YTD Actuals vs. LSO Plan</div>
+          <div class="kpi-tile-value">$<span>121.4</span><span class="unit">M</span></div>
+          <div class="kpi-tile-sub"><span class="kpi-delta bad">▼ $5.8M</span> vs. plan · <b>−4.6%</b></div>
+          <div style="margin-top:6px;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">From ex-US actuals</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">FY26 Run-rate Forecast</div>
+          <div class="kpi-tile-value">$<span>178.2</span><span class="unit">M</span></div>
+          <div class="kpi-tile-sub">LSO plan <b>$188M</b> · <span style="color:var(--deduction-ink);font-weight:600;">gap $9.8M</span></div>
+          <div style="margin-top:6px;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">Actuals + LSO plan</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">IRP Erosion Baked-in</div>
+          <div class="kpi-tile-value" style="color:var(--deduction-ink);">Elevated</div>
+          <div class="kpi-tile-sub">Next 12mo · driven by <b>FR</b>, <b>ES</b> shortfalls — see Projected Erosion</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Reallocation Opportunity</div>
+          <div class="kpi-tile-value" style="color:var(--net-ink);">$8.2<span class="unit">M</span></div>
+          <div class="kpi-tile-sub">from FR shortfall to <b>IT</b>, <b>ES</b> upside</div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="insight crit">
+          <div class="insight-mark">!</div>
+          <div style="flex:1;">
+            <div><b>France is $3.0M short through Sept</b> — 30% below LSO plan. Formulary rollout in 4 regions delayed to Q1-27. Italy and Spain trending <b>+11%</b> and <b>+6%</b> — capacity to absorb $2.4M of the shortfall. Rest of shortfall materially increases <b>IRP erosion exposure</b> in referenced markets (GR, PL, TR, SA) — quantified in the Projected Erosion tab.</div>
+            <div class="insight-actions">
+              <button class="insight-btn" onclick="switchTab('rebalance')" title="Jump to the workbench pre-focused on France to net the shortfall against Italy/UK upside before it hits the ledger.">Open Reallocation Workbench</button>
+              <button class="insight-btn" onclick="switchTab('performance')" title="Open the full country-by-country actuals-vs-plan grid to see variance drivers across the portfolio.">Review Country Performance</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="body-grid">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Country Health <span class="sub">actuals vs. LSO plan, YTD</span></div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn" style="padding:4px 10px;font-size:11px;" id="map-mode-var" title="Color the map by YTD variance % (green = above plan, red = below). Useful when you want to see the magnitude of misses across the portfolio.">Variance</button>
+                <button class="btn" style="padding:4px 10px;font-size:11px;background:var(--brand);color:#fff;border-color:var(--brand);" id="map-mode-status" title="Color the map by launch status (on-track / at-risk / off-plan / pre-launch). Fastest way to spot countries needing action.">Status</button>
+              </div>
+            </div>
+            <div class="map-wrap">
+              <svg id="worldMap" class="map-svg" viewBox="0 0 900 380" preserveAspectRatio="xMidYMid meet"></svg>
+            </div>
+            <div style="padding:14px 18px;border-top:1px solid var(--border);">
+              <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;">Portfolio Health (7 live countries)</div>
+              <div class="health-band" id="healthBand"></div>
+              <div class="health-band-legend">
+                <span><span class="dot" style="background:var(--net);"></span>On-track (≥ −3%)</span>
+                <span><span class="dot" style="background:var(--warn);"></span>At-risk (−3% to −10%)</span>
+                <span><span class="dot" style="background:var(--deduction);"></span>Off-plan (< −10%)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rail">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title" id="cp-title">France <span class="sub">selected</span></div>
+                <span class="status-pill off">Off-plan</span>
+              </div>
+              <div class="card-body" id="cp-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COUNTRY PERFORMANCE ============ -->
+    <section id="section-performance" class="app-section">
+      <div class="section-kpi-strip">
+        <div class="kpi-tile accent">
+          <div class="kpi-tile-label">Countries Live</div>
+          <div class="kpi-tile-value">7 <span class="unit">/ 20</span></div>
+          <div class="kpi-tile-sub"><b>13</b> pending per LSO sequence</div>
+          <div style="margin-top:6px;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">Ex-US actuals · sync 2026-09-24</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">On-track</div>
+          <div class="kpi-tile-value" style="color:var(--net-ink);">4</div>
+          <div class="kpi-tile-sub">US · DE · UK · IT</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">At-risk</div>
+          <div class="kpi-tile-value" style="color:var(--warn-ink);">2</div>
+          <div class="kpi-tile-sub">ES · JP · running <b>−5%</b> to <b>−8%</b></div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Off-plan</div>
+          <div class="kpi-tile-value" style="color:var(--deduction-ink);">1</div>
+          <div class="kpi-tile-sub"><b>France</b> · −30% YTD · Δ −$3.0M</div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Country Performance <span class="sub">actuals vs. LSO plan · click a row to drill</span></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" style="padding:4px 10px;font-size:11px;" title="Narrow the table to a country subset (region, wave, status). Useful for regional review meetings.">Filter: All</button>
+              <button class="btn" style="padding:4px 10px;font-size:11px;" title="Switch time frame between MTD / QTD / YTD / FY. Recomputes every row's variance and forecast column.">View: YTD</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="perf-table" id="perfTable"></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ REALLOCATION WORKBENCH ============ -->
+    <section id="section-rebalance" class="app-section">
+      <div class="section-kpi-strip">
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Shortfall Countries</div>
+          <div class="kpi-tile-value" style="color:var(--deduction-ink);">3</div>
+          <div class="kpi-tile-sub"><b>FR</b> −$3.0M · <b>ES</b> −$0.8M · <b>JP</b> −$1.4M</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Upside Countries</div>
+          <div class="kpi-tile-value" style="color:var(--net-ink);">2</div>
+          <div class="kpi-tile-sub"><b>IT</b> +$2.4M · <b>UK</b> +$1.1M</div>
+        </div>
+        <div class="kpi-tile accent">
+          <div class="kpi-tile-label">Net Reallocation Capacity</div>
+          <div class="kpi-tile-value">$3.5<span class="unit">M</span></div>
+          <div class="kpi-tile-sub">absorbs <b>67%</b> of France shortfall</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">IRP Erosion Avoided</div>
+          <div class="kpi-tile-value" style="color:var(--net-ink);">Meaningful</div>
+          <div class="kpi-tile-sub">by preserving FR published list — see Projected Erosion</div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="rebal-body">
+          <div class="rebal-list">
+            <div class="rebal-list-head">Shortfall Countries · YTD Sep</div>
+            <div id="rebalList"></div>
+          </div>
+          <div id="rebalDetail"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LSO PLAN VS. ACTUALS ============ -->
+    <section id="section-lso" class="app-section">
+      <div class="section-kpi-strip">
+        <div class="kpi-tile accent">
+          <div class="kpi-tile-label">Launch Date Adherence</div>
+          <div class="kpi-tile-value">86<span class="unit">%</span></div>
+          <div class="kpi-tile-sub"><b>6 of 7</b> launched within ±2 mo of LSO plan</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Delayed Launches</div>
+          <div class="kpi-tile-value" style="color:var(--deduction-ink);">1</div>
+          <div class="kpi-tile-sub"><b>France</b> · +4 months vs. LSO</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Pull-ins</div>
+          <div class="kpi-tile-value" style="color:var(--net-ink);">1</div>
+          <div class="kpi-tile-sub"><b>UK</b> · −2 months vs. LSO</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Revenue Impact of Slippage</div>
+          <div class="kpi-tile-value" style="color:var(--deduction-ink);">−$2.1<span class="unit">M</span></div>
+          <div class="kpi-tile-sub">net of France delay − UK pull-in</div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:24px;height:12px;border:1.5px dashed var(--muted-2);border-radius:2px;"></span>
+              <span style="font-size:12px;color:var(--ink-2);"><b style="color:var(--ink);">LSO Plan v3.2</b> loaded <span style="color:var(--muted);">2026-08-14</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:24px;height:12px;background:var(--brand);border-radius:2px;"></span>
+              <span style="font-size:12px;color:var(--ink-2);"><b style="color:var(--ink);">ex-US actuals</b> through <span style="color:var(--muted);">2026-09-24</span></span>
+            </div>
+            <div style="margin-left:auto;font-size:11px;color:var(--muted);"><b style="color:var(--ink);">Hover</b> any actual bar for the LSO-said → reality-is delta.</div>
+          </div>
+          <div class="lseq-body">
+            <div style="display:grid;grid-template-columns:180px 1fr 130px;">
+              <div style="padding:8px 14px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;background:var(--surface-3);border-bottom:1px solid var(--border);">Country</div>
+              <div id="lseqHead" class="lseq-timeline-head"></div>
+              <div style="padding:8px 14px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;background:var(--surface-3);border-bottom:1px solid var(--border);text-align:right;">Δ vs. LSO</div>
+            </div>
+            <div id="lseqRows"></div>
+          </div>
+
+          <div style="display:flex;gap:16px;padding:12px 18px;border-top:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap;align-items:center;">
+            <span style="font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700;">Legend</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);">
+              <span style="display:inline-block;width:24px;height:12px;border:1.5px dashed var(--muted-2);border-radius:2px;"></span>
+              LSO planned window
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);">
+              <span style="display:inline-block;width:24px;height:12px;background:var(--brand);border-radius:2px;"></span>
+              Actual / current
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);">
+              <span style="display:inline-block;width:24px;height:12px;background:var(--net);border-radius:2px;"></span>
+              Ahead of plan
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);">
+              <span style="display:inline-block;width:24px;height:12px;background:var(--deduction);border-radius:2px;"></span>
+              Behind plan
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);">
+              <span style="display:inline-block;width:10px;height:10px;background:var(--nav-bg);transform:rotate(45deg);"></span>
+              HTA milestone
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ IRP EROSION FORECAST ============ -->
+    <section id="section-erosion" class="app-section">
+      <div class="body">
+        <div class="narrative">
+          <span class="narrative-tag">Erosion projection</span>
+          <div class="narrative-body">
+            Given current YTD demand in <b>France (−30%)</b> and <b>Spain (−8%)</b>, GTN's referenced-price model projects
+            <span class="risk">−$3.4M in net revenue erosion</span> across the referencing web over the next 12 months.
+            Peak leakage lands <b>M+11</b> when Greece, Poland, and Saudi Arabia refresh their baskets simultaneously.
+            Renegotiating France's MEA to preserve list would <span class="opp">avoid $1.6M</span> of downstream erosion.
+          </div>
+        </div>
+
+        <div style="padding:10px 14px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--radius);margin-bottom:20px;font-size:12px;color:var(--ink-2);display:flex;gap:10px;align-items:center;">
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--nav-bg);color:#fff;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Read from actuals</span>
+          <span>This view projects erosion from <b>current YTD demand shortfalls</b> using IRP rules pulled from GPM. Stress-test / what-if simulations are handled upstream in <b>GPM &amp; LSO</b>.</span>
+        </div>
+
+        <div class="section-kpi-strip" style="grid-template-columns:repeat(4,1fr);padding:0;background:transparent;border-bottom:0;margin-bottom:20px;">
+          <div class="kpi-tile">
+            <div class="kpi-tile-label">Source country net impact</div>
+            <div class="kpi-tile-value" id="simDirect" style="color:var(--deduction-ink);">−$1.2M</div>
+            <div class="kpi-tile-sub" id="simDirectSub">France · YTD Δ from demand shortfall</div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-tile-label">Downstream IRP erosion</div>
+            <div class="kpi-tile-value" id="simCascade" style="color:var(--deduction-ink);">−$1.6M</div>
+            <div class="kpi-tile-sub"><b>4</b> countries reprice within 18mo</div>
+          </div>
+          <div class="kpi-tile accent">
+            <div class="kpi-tile-label">Total 12mo erosion</div>
+            <div class="kpi-tile-value" id="simTotal" style="color:var(--deduction-ink);">−$3.4M</div>
+            <div class="kpi-tile-sub">1.9% of FY26 net revenue</div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-tile-label">Peak cascade month</div>
+            <div class="kpi-tile-value" id="simPeak">M+11</div>
+            <div class="kpi-tile-sub">GR + PL + SA refresh cycles align</div>
+          </div>
+        </div>
+
+        <div class="body-grid">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">IRP Cascade <span class="sub">projected propagation through referencing graph</span></div>
+              <span style="font-size:11px;color:var(--muted);">Source: <b id="cascadeSource" style="color:var(--ink);">France · −8.0% net erosion (from demand)</b></span>
+            </div>
+            <div style="padding:14px 18px 8px;">
+              <svg id="cascadeSvg" class="cascade-svg" viewBox="0 0 720 480" preserveAspectRatio="xMidYMid meet"></svg>
+            </div>
+          </div>
+
+          <div class="rail">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">Most Exposed</div>
+              </div>
+              <div class="card-body" id="exposedList"></div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">Mitigations</div>
+              </div>
+              <div class="card-body">
+                <div class="exposed-row" style="grid-template-columns:auto 1fr;">
+                  <span style="display:inline-block;padding:2px 8px;background:var(--brand-soft);color:var(--brand-ink);border-radius:2px;font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">MEA</span>
+                  <span style="font-size:12px;line-height:1.55;">Renegotiate FR confidential MEA to preserve published list. <b>Avoid $1.6M erosion.</b></span>
+                </div>
+                <div class="exposed-row" style="grid-template-columns:auto 1fr;">
+                  <span style="display:inline-block;padding:2px 8px;background:var(--warn-soft);color:var(--warn-ink);border-radius:2px;font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Basket</span>
+                  <span style="font-size:12px;line-height:1.55;">Petition PL &amp; TR to exclude FR from ref basket if list is cut. <b>Avoid $0.5M.</b></span>
+                </div>
+                <div class="exposed-row" style="grid-template-columns:auto 1fr;">
+                  <span style="display:inline-block;padding:2px 8px;background:var(--net-soft);color:var(--net-ink);border-radius:2px;font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Reallocate</span>
+                  <span style="font-size:12px;line-height:1.55;">Reallocate expected revenue to IT/UK upside (see Workbench).</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-head">
+            <div class="card-title">Cascade Timeline <span class="sub">cumulative leakage over 24 months from today</span></div>
+          </div>
+          <div style="padding:16px 18px;">
+            <svg id="cascadeTimeline" class="cascade-timeline-svg" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ REFERENCING GRAPH ============ -->
+    <section id="section-graph" class="app-section">
+      <div class="body">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Reference Pricing Network <span class="sub">directed — arrow points from referencer to source</span></div>
+            <span style="font-size:11px;color:var(--muted);">20 countries · 78 edges</span>
+          </div>
+          <div class="graph-filter-row" style="flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:3px;">Region</div>
+              <div class="filter-picker">
+                <button class="active" data-filter="all">All</button>
+                <button data-filter="eu">EU / EEA</button>
+                <button data-filter="oecd">OECD</button>
+                <button data-filter="gcc">GCC</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:3px;">Color mode</div>
+              <div class="filter-picker" id="graphColorMode">
+                <button data-color="status">Status</button>
+                <button class="active" data-color="exposure">Live cascade exposure</button>
+              </div>
+            </div>
+            <span style="margin-left:auto;font-size:11px;color:var(--muted);align-self:end;">Hover a country to see inbound (cascade risk) &amp; outbound (references)</span>
+          </div>
+          <svg id="graphSvg" class="graph-svg" viewBox="0 0 900 620"></svg>
+          <div class="graph-legend" id="graphLegend">
+            <span><span class="swatch" style="background:var(--muted-2);"></span> Reference edge</span>
+            <span><span class="swatch" style="background:var(--brand);"></span> References selected country</span>
+            <span><span class="swatch" style="background:var(--deduction);"></span> Referenced BY selected (cascade risk)</span>
+            <span style="margin-left:auto;color:var(--muted);" id="graphLegendNote">In exposure mode: red nodes = cascade risk from current shortfalls (FR, ES, JP)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONFIGURATION ============ -->
+    <section id="section-config" class="app-section">
+      <div class="body">
+        <div style="padding:12px 16px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--radius);margin-bottom:20px;font-size:12px;color:var(--ink-2);display:flex;gap:10px;align-items:center;justify-content:space-between;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--nav-bg);color:#fff;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Managed in GPM</span>
+            <span>Reference-basket definitions, country pricing rules, and per-simulation rule overrides are authored upstream in <b>GPM</b>. This module reads those rules and only exposes policy-level switches that affect the tracking layer.</span>
+          </div>
+          <a href="#" style="color:var(--brand-ink);font-weight:600;font-size:12px;text-decoration:none;white-space:nowrap;">Open Rules in GPM →</a>
+        </div>
+
+        <div style="max-width:640px;">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Policy Toggles <span class="sub">tracking-layer switches</span></div>
+            </div>
+            <div>
+              <div class="toggle-row">
+                  <div class="toggle-info">
+                    <div class="toggle-name">US MFN (EO 14297)</div>
+                    <div class="toggle-desc">Flip US into IRP-derived net. Medicare + new Commercial launches use lowest OECD reference. Signed May 2025.</div>
+                  </div>
+                  <div class="toggle-switch on"></div>
+                </div>
+                <div class="toggle-row">
+                  <div class="toggle-info">
+                    <div class="toggle-name">EU JCA (HTAR)</div>
+                    <div class="toggle-desc">Joint Clinical Assessment. Oncology + ATMPs live Jan 2025. Orphans 2028, all centrally-authorized 2030.</div>
+                  </div>
+                  <div class="toggle-switch on"></div>
+                </div>
+                <div class="toggle-row">
+                  <div class="toggle-info">
+                    <div class="toggle-name">MEA confidential mode</div>
+                    <div class="toggle-desc">Cascade the <b>published list</b> price, not MEA-adjusted net. Reflects industry practice.</div>
+                  </div>
+                  <div class="toggle-switch on"></div>
+                </div>
+                <div class="toggle-row">
+                  <div class="toggle-info">
+                    <div class="toggle-name">Auto-post true-ups</div>
+                    <div class="toggle-desc">Post country-level accrual adjustments monthly from variance. Otherwise, review-and-approve gate.</div>
+                  </div>
+                  <div class="toggle-switch"></div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="tt" class="tt"><div class="tt-title" id="ttTitle"></div><div class="tt-body" id="ttBody"></div></div>
+
+<!-- Guided tour overlay -->
+<div id="tourOverlay" class="tour-overlay">
+  <div id="tourSpot" class="tour-spot"></div>
+  <div id="tourPop" class="tour-pop">
+    <div class="tour-pop-tag">Guided tour</div>
+    <div class="tour-pop-title" id="tourTitle"></div>
+    <div class="tour-pop-body" id="tourBody"></div>
+    <div class="tour-pop-actions">
+      <span class="tour-pop-step" id="tourStep"></span>
+      <div class="tour-pop-btns">
+        <button class="btn" id="tourPrev" onclick="prevStep()">Back</button>
+        <button class="btn" onclick="endTour()">Skip</button>
+        <button class="btn btn-primary" id="tourNext" onclick="nextStep()">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Country detail modal -->
+<div id="perfModal" class="modal-overlay" onclick="if(event.target===this)closePerfModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-subtitle" id="modalSubtitle"></div>
+      </div>
+      <button class="modal-close" onclick="closePerfModal()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closePerfModal()">Close</button>
+      <button class="btn btn-primary" id="modalCTA">Open Reallocation Workbench</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// COUNTRY DATA — planV LSO plan, actYTD, ffFY forecasted finish FY26
+// Rev numbers in $M
+// ================================================================
+const COUNTRIES = [
+  { code:'US', name:'United States',  x:170, y:150, r:'AM', w:1, list:15200, net:11400, prov:'list',   status:'ok',   planYTD:76.0, actYTD:78.4, planFY:100.0, ffFY:102.8, launched:true,  launchM_plan:0, launchM_actual:0 },
+  { code:'DE', name:'Germany',        x:465, y:118, r:'EU', w:1, list:14200, net:11800, prov:'hta',    status:'ok',   planYTD:14.8, actYTD:15.1, planFY:19.6,  ffFY:20.0,  launched:true,  launchM_plan:0, launchM_actual:0 },
+  { code:'UK', name:'United Kingdom', x:430, y:105, r:'EU', w:1, list:13200, net:10800, prov:'hta',    status:'ok',   planYTD:9.8,  actYTD:10.9, planFY:13.1,  ffFY:14.2,  launched:true,  launchM_plan:2, launchM_actual:0 /* pull-in 2mo */ },
+  { code:'FR', name:'France',         x:445, y:135, r:'EU', w:2, list:11800, net:9400,  prov:'hta',    status:'off',  planYTD:10.0, actYTD:7.0,  planFY:13.5,  ffFY:9.8,   launched:true,  launchM_plan:5, launchM_actual:9  /* +4mo delay */ },
+  { code:'IT', name:'Italy',          x:475, y:150, r:'EU', w:2, list:10600, net:8800,  prov:'hta',    status:'ok',   planYTD:6.4,  actYTD:7.1,  planFY:8.6,   ffFY:9.5,   launched:true,  launchM_plan:6, launchM_actual:6 },
+  { code:'ES', name:'Spain',          x:435, y:158, r:'EU', w:2, list:9800,  net:8200,  prov:'irp',    status:'risk', planYTD:4.4,  actYTD:4.1,  planFY:5.9,   ffFY:5.5,   launched:true,  launchM_plan:8, launchM_actual:8 },
+  { code:'JP', name:'Japan',          x:775, y:140, r:'AS', w:2, list:11400, net:10200, prov:'hta',    status:'risk', planYTD:0.0,  actYTD:0.0,  planFY:2.6,   ffFY:1.2,   launched:true,  launchM_plan:9, launchM_actual:11 /* 2mo delay */ },
+  // Pre-launch
+  { code:'NL', name:'Netherlands',    x:455, y:112, r:'EU', w:2, list:12200, net:10400, prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:6, launchM_actual:null },
+  { code:'SE', name:'Sweden',         x:475, y:78,  r:'EU', w:2, list:12800, net:10800, prov:'hta',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:7, launchM_actual:null },
+  { code:'KR', name:'South Korea',    x:760, y:150, r:'AS', w:2, list:9600,  net:8400,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:11,launchM_actual:null },
+  { code:'AU', name:'Australia',      x:790, y:265, r:'AS', w:2, list:10800, net:9200,  prov:'hta',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:10,launchM_actual:null },
+  { code:'CA', name:'Canada',         x:170, y:105, r:'AM', w:2, list:9800,  net:8600,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:9, launchM_actual:null },
+  { code:'PL', name:'Poland',         x:490, y:118, r:'EU', w:3, list:8200,  net:7100,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:16,launchM_actual:null },
+  { code:'GR', name:'Greece',         x:495, y:158, r:'EU', w:3, list:7540,  net:6800,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:18,launchM_actual:null },
+  { code:'TR', name:'Turkey',         x:520, y:150, r:'EM', w:3, list:6200,  net:5400,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:17,launchM_actual:null },
+  { code:'SA', name:'Saudi Arabia',   x:565, y:180, r:'GCC',w:3, list:7100,  net:6300,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:15,launchM_actual:null },
+  { code:'AE', name:'UAE',            x:575, y:190, r:'GCC',w:3, list:8400,  net:7400,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:16,launchM_actual:null },
+  { code:'BR', name:'Brazil',         x:245, y:245, r:'LA', w:3, list:6800,  net:5700,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:20,launchM_actual:null },
+  { code:'MX', name:'Mexico',         x:145, y:210, r:'LA', w:3, list:7900,  net:6800,  prov:'irp',    status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:19,launchM_actual:null },
+  { code:'IN', name:'India',          x:685, y:190, r:'EM', w:3, list:3200,  net:2900,  prov:'tender', status:'pending', planYTD:0, actYTD:0, planFY:0, ffFY:0, launched:false, launchM_plan:22,launchM_actual:null },
+];
+// referencing rules
+COUNTRIES.find(c=>c.code==='CA').refs = ['FR','DE','IT','NL','SE','UK','JP','AU'];
+COUNTRIES.find(c=>c.code==='FR').refs = ['DE','IT','UK','ES'];
+COUNTRIES.find(c=>c.code==='IT').refs = ['DE','FR','ES','UK'];
+COUNTRIES.find(c=>c.code==='ES').refs = ['FR','DE','IT','UK'];
+COUNTRIES.find(c=>c.code==='NL').refs = ['DE','FR','UK'];
+COUNTRIES.find(c=>c.code==='PL').refs = ['DE','FR','ES','GR'];
+COUNTRIES.find(c=>c.code==='GR').refs = ['DE','FR','IT'];
+COUNTRIES.find(c=>c.code==='TR').refs = ['DE','FR','IT','ES','GR'];
+COUNTRIES.find(c=>c.code==='SA').refs = ['DE','FR','UK','IT','ES','GR','TR','JP','CA','AU','BR','PL','NL','SE','MX','KR'];
+COUNTRIES.find(c=>c.code==='AE').refs = ['DE','FR','UK','IT','ES'];
+COUNTRIES.find(c=>c.code==='BR').refs = ['FR','ES','IT','AU','CA','GR','US'];
+COUNTRIES.find(c=>c.code==='MX').refs = ['US','CA','ES','FR'];
+COUNTRIES.find(c=>c.code==='JP').refs = ['US','UK','DE','FR'];
+COUNTRIES.find(c=>c.code==='KR').refs = ['US','UK','DE','FR','IT','JP'];
+COUNTRIES.forEach(c => { if (!c.refs) c.refs = []; });
+
+const RULE_TEXT = {
+  US:'Free market · list = WAC · MFN armed',
+  DE:'Free year 1 · AMNOG negotiation year 2+',
+  FR:'CEPP · price-volume agreement',
+  UK:'NICE · £30K/QALY threshold · VPAS',
+  IT:'AIFA · negotiated · price bands',
+  ES:'mean(FR, DE, IT, UK) — lowest available',
+  NL:'mean(BE, DE, FR, UK)',
+  SE:'TLV cost-effectiveness · no external ref',
+  PL:'mean(3 lowest of EU27)',
+  GR:'mean(3 lowest of EU27) · quarterly',
+  TR:'min(ES, FR, GR, IT, PT)',
+  SA:'min of 30-country basket · SFDA · annual',
+  AE:'min(DE, FR, UK, IT, ES)',
+  BR:'CMED rule VI',
+  MX:'basket median · Cofepris annual',
+  JP:'foreign avg price adjustment · biennial',
+  KR:'A7 basket · min · adjustment factor',
+  AU:'PBAC cost-effectiveness · no external ref',
+  IN:'DPCO ceiling · tender-driven',
+  CA:'PMPRB11 HIP · Jan 2026',
+};
+
+// Selected country
+let selectedCountry = 'FR';
+let selectedRebal = 'FR';
+let erosionMode = 'forecast';
+
+// ================================================================
+// CHOROPLETH — colored by status
+// ================================================================
+function statusColor(s) {
+  return ({
+    ok:'#7ECBAB', risk:'#F6C9A8', off:'#DC4A48', pending:'#E1E5EB'
+  })[s] || '#E1E5EB';
+}
+function statusLabel(s) {
+  return ({ok:'On-track', risk:'At-risk', off:'Off-plan', pending:'Pre-launch'})[s];
+}
+function renderMap() {
+  const svg = document.getElementById('worldMap');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const bg = document.createElementNS(ns, 'rect');
+  bg.setAttribute('x', 0); bg.setAttribute('y', 0);
+  bg.setAttribute('width', 900); bg.setAttribute('height', 380);
+  bg.setAttribute('fill', '#F4F8FB');
+  svg.appendChild(bg);
+
+  const blobs = [
+    { d: 'M60,60 Q90,50 130,60 L200,70 Q220,100 210,140 L190,180 Q160,200 130,190 L90,180 Q60,150 55,110 Z' },
+    { d: 'M200,200 Q235,205 260,230 L275,290 Q260,330 225,335 L200,320 Q185,280 195,240 Z' },
+    { d: 'M410,80 Q450,70 495,80 L525,110 Q530,150 500,165 L455,170 Q425,155 410,125 Z' },
+    { d: 'M440,175 Q490,180 520,210 L530,275 Q505,320 470,315 L440,290 Q425,240 435,205 Z' },
+    { d: 'M535,145 Q600,140 700,160 L790,180 Q810,140 780,105 L710,90 Q640,105 570,115 Z' },
+    { d: 'M660,180 Q720,175 790,180 L810,240 Q780,275 740,270 L680,255 Q660,220 660,185 Z' },
+    { d: 'M760,255 Q800,255 825,275 L820,300 Q795,315 770,305 L755,285 Z' },
+  ];
+  blobs.forEach(b => {
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', b.d);
+    p.setAttribute('fill', '#DDE6EE');
+    p.setAttribute('stroke', '#C1CFDA');
+    p.setAttribute('stroke-width', '0.6');
+    svg.appendChild(p);
+  });
+
+  COUNTRIES.forEach(c => {
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'country' + (c.code === selectedCountry ? ' selected' : ''));
+    const r = 15;
+    const rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('x', c.x - r);
+    rect.setAttribute('y', c.y - 10);
+    rect.setAttribute('width', r * 2);
+    rect.setAttribute('height', 20);
+    rect.setAttribute('rx', 3);
+    rect.setAttribute('fill', statusColor(c.status));
+    rect.setAttribute('stroke', c.code === selectedCountry ? 'var(--brand)' : '#fff');
+    rect.setAttribute('stroke-width', c.code === selectedCountry ? 2.5 : 1);
+    g.appendChild(rect);
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('class', 'country-label' + (c.status === 'off' ? ' dark' : ''));
+    t.setAttribute('x', c.x); t.setAttribute('y', c.y + 4);
+    t.setAttribute('text-anchor', 'middle');
+    t.textContent = c.code;
+    g.appendChild(t);
+    g.addEventListener('click', () => {
+      selectedCountry = c.code;
+      renderMap();
+      renderCountryPanel(c.code);
+    });
+    g.addEventListener('mouseenter', e => {
+      const varPct = c.planFY > 0 ? ((c.ffFY - c.planFY) / c.planFY * 100).toFixed(1) : '—';
+      showTip(e, c.name, `${statusLabel(c.status)} · FY plan $${c.planFY}M · forecast $${c.ffFY}M · Δ ${varPct}%`);
+    });
+    g.addEventListener('mousemove', moveTip);
+    g.addEventListener('mouseleave', hideTip);
+    svg.appendChild(g);
+  });
+}
+
+function renderHealthBand() {
+  const live = COUNTRIES.filter(c => c.launched);
+  const okRev = live.filter(c => c.status === 'ok').reduce((s,c) => s + c.actYTD, 0);
+  const riskRev = live.filter(c => c.status === 'risk').reduce((s,c) => s + c.actYTD, 0);
+  const offRev = live.filter(c => c.status === 'off').reduce((s,c) => s + c.actYTD, 0);
+  const total = okRev + riskRev + offRev;
+  const band = document.getElementById('healthBand');
+  const pct = v => total > 0 ? Math.round(v / total * 100) : 0;
+  band.innerHTML = `
+    <div class="seg ok" style="flex:${okRev};" title="On-track · $${okRev.toFixed(1)}M">$${okRev.toFixed(0)}M · ${pct(okRev)}%</div>
+    <div class="seg risk" style="flex:${riskRev};" title="At-risk · $${riskRev.toFixed(1)}M">$${riskRev.toFixed(0)}M · ${pct(riskRev)}%</div>
+    <div class="seg off" style="flex:${offRev};" title="Off-plan · $${offRev.toFixed(1)}M">$${offRev.toFixed(0)}M · ${pct(offRev)}%</div>
+  `;
+}
+
+// ================================================================
+// COUNTRY PANEL
+// ================================================================
+function renderCountryPanel(code) {
+  const c = COUNTRIES.find(x => x.code === code);
+  if (!c) return;
+  document.getElementById('cp-title').innerHTML = c.name + ' <span class="sub">selected</span>';
+  const varAbs = (c.actYTD - c.planYTD).toFixed(1);
+  const varPct = c.planYTD > 0 ? ((c.actYTD - c.planYTD) / c.planYTD * 100).toFixed(1) : '—';
+  const ffVarAbs = (c.ffFY - c.planFY).toFixed(1);
+  const ffVarPct = c.planFY > 0 ? ((c.ffFY - c.planFY) / c.planFY * 100).toFixed(1) : '—';
+  const isPos = c.actYTD >= c.planYTD;
+  const referencedBy = COUNTRIES.filter(x => x.refs.includes(code));
+
+  const statusPill = ({
+    ok:'<span class="status-pill ok">On-track</span>',
+    risk:'<span class="status-pill risk">At-risk</span>',
+    off:'<span class="status-pill off">Off-plan</span>',
+    pending:'<span class="status-pill pending">Pre-launch</span>',
+  })[c.status];
+  document.querySelector('#section-overview .country-panel-name, #section-overview .card-head .status-pill');
+  const head = document.querySelector('#section-overview .card-head:has(.card-title#cp-title) .status-pill');
+  if (head) head.outerHTML = statusPill;
+
+  const body = document.getElementById('cp-body');
+  if (!c.launched) {
+    body.innerHTML = `
+      <div class="price-row"><div class="price-key">Launch status</div><div class="price-value">Pre-launch</div></div>
+      <div class="price-row"><div class="price-key">LSO planned launch (M+)</div><div class="price-value">M+${c.launchM_plan}</div></div>
+      <div class="price-row"><div class="price-key">Wave</div><div class="price-value">W${c.w}</div></div>
+      <div class="price-row"><div class="price-key">List price (planned)</div><div class="price-value">€${c.list.toLocaleString()}</div></div>
+      <div class="price-row"><div class="price-key">Referencing rule</div><div class="price-value" style="font-family:var(--sans);font-size:12px;">${({irp:'IRP-derived',hta:'HTA',tender:'Tender',list:'Free / list'})[c.prov]}</div></div>
+      <div style="font-size:11px;color:var(--muted);padding:10px 0 4px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;">Referenced by</div>
+      <div>${referencedBy.length ? referencedBy.map(x=>`<span style="display:inline-block;padding:2px 7px;background:var(--brand-soft);color:var(--brand-ink);border-radius:2px;font-size:11px;font-weight:600;margin:2px 4px 2px 0;">${x.code}</span>`).join('') : '<span style="font-size:11px;color:var(--muted);font-style:italic;">None</span>'}</div>
+    `;
+  } else {
+    body.innerHTML = `
+      <div class="price-row"><div class="price-key">YTD plan (LSO)</div><div class="price-value">$${c.planYTD.toFixed(1)}M</div></div>
+      <div class="price-row"><div class="price-key">YTD actuals</div><div class="price-value">$${c.actYTD.toFixed(1)}M</div></div>
+      <div class="price-row"><div class="price-key">YTD variance</div><div class="price-value ${isPos?'pos':'neg'}">${isPos?'+':'−'}$${Math.abs(varAbs)}M (${varPct}%)</div></div>
+      <div class="price-row"><div class="price-key">FY26 plan</div><div class="price-value">$${c.planFY.toFixed(1)}M</div></div>
+      <div class="price-row"><div class="price-key">FY26 forecast</div><div class="price-value ${c.ffFY>=c.planFY?'pos':'neg'}">$${c.ffFY.toFixed(1)}M</div></div>
+      <div class="price-row"><div class="price-key">FY26 gap to plan</div><div class="price-value ${c.ffFY>=c.planFY?'pos':'neg'}">${c.ffFY>=c.planFY?'+':'−'}$${Math.abs(ffVarAbs)}M</div></div>
+      <div class="price-row"><div class="price-key">Launch delta vs. LSO</div><div class="price-value">${c.launchM_actual === c.launchM_plan ? 'on plan' : (c.launchM_actual - c.launchM_plan > 0 ? '+' : '') + (c.launchM_actual - c.launchM_plan) + ' mo'}</div></div>
+      <div class="price-row"><div class="price-key">Rate provenance</div><div class="price-value"><span class="provenance-pill ${c.prov}">${({irp:'IRP',hta:'HTA',tender:'Tender',list:'Free'})[c.prov]||c.prov}</span></div></div>
+      <div style="font-size:11px;color:var(--muted);padding:10px 0 4px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;">Downstream referencers</div>
+      <div>${referencedBy.length ? referencedBy.map(x=>`<span style="display:inline-block;padding:2px 7px;background:${referencedBy.length>=5?'var(--deduction-soft)':'var(--brand-soft)'};color:${referencedBy.length>=5?'var(--deduction-ink)':'var(--brand-ink)'};border-radius:2px;font-size:11px;font-weight:600;margin:2px 4px 2px 0;">${x.code}</span>`).join('') : '<span style="font-size:11px;color:var(--muted);font-style:italic;">None</span>'}</div>
+    `;
+  }
+}
+
+// ================================================================
+// COUNTRY PERFORMANCE TABLE
+// ================================================================
+function sparkline(vals, opts) {
+  opts = opts || {};
+  const W = 80, H = 24;
+  const max = Math.max(...vals), min = Math.min(...vals);
+  const range = max - min || 1;
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1)) * W},${H - ((v - min) / range) * H}`).join(' ');
+  const color = opts.color || 'var(--brand)';
+  return `<span class="spark"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><polyline fill="none" stroke="${color}" stroke-width="1.6" points="${pts}"/></svg></span>`;
+}
+
+function renderPerfTable() {
+  const rows = COUNTRIES.map(c => {
+    const varAbs = (c.actYTD - c.planYTD).toFixed(1);
+    const varPct = c.planYTD > 0 ? ((c.actYTD - c.planYTD) / c.planYTD * 100).toFixed(1) : null;
+    const ffVarAbs = (c.ffFY - c.planFY).toFixed(1);
+    const ffVarPct = c.planFY > 0 ? ((c.ffFY - c.planFY) / c.planFY * 100).toFixed(1) : null;
+
+    // Fake spark trend based on status
+    const trend = c.status === 'off'
+      ? [10, 9.5, 8.5, 8.2, 7.8, 7.4, 7.0, 6.6, 6.2]
+      : c.status === 'risk'
+        ? [10, 10, 9.8, 9.5, 9.5, 9.4, 9.3, 9.2, 9.1]
+        : c.status === 'ok'
+          ? [8, 8.5, 9.1, 9.5, 9.9, 10.2, 10.5, 10.8, 11.0]
+          : null;
+
+    const statusPill = ({
+      ok:'<span class="status-pill ok">On-track</span>',
+      risk:'<span class="status-pill risk">At-risk</span>',
+      off:'<span class="status-pill off">Off-plan</span>',
+      pending:'<span class="status-pill pending">Pre-launch</span>',
+    })[c.status];
+
+    const actionBtn = c.status === 'off'
+      ? '<button class="btn btn-primary" style="padding:4px 10px;font-size:11px;" title="Open the Reallocation Workbench for this country. Net the shortfall against upside countries before it hits the ledger." onclick="event.stopPropagation();openRebal(\''+c.code+'\');">Reallocate</button>'
+      : c.status === 'risk'
+        ? '<button class="btn" style="padding:4px 10px;font-size:11px;" title="Inspect variance drivers before deciding whether to reallocate. At-risk countries do not require action yet but should be watched." onclick="event.stopPropagation();openRebal(\''+c.code+'\');">Review</button>'
+        : c.status === 'pending'
+          ? '<span style="color:var(--muted);font-size:11px;">—</span>'
+          : '<span style="color:var(--muted);font-size:11px;">no action</span>';
+
+    // MEA realization — % of planned rebate accrual actually earned; synthesized from status
+    const meaReal = c.launched
+      ? (c.status === 'off' ? 68 : c.status === 'risk' ? 82 : c.status === 'ok' ? 96 : null)
+      : null;
+    const meaColor = meaReal === null ? 'var(--muted)' : meaReal < 75 ? 'var(--deduction-ink)' : meaReal < 90 ? 'var(--warn-ink)' : 'var(--net-ink)';
+    const meaCell = meaReal === null
+      ? '<span style="color:var(--muted);">—</span>'
+      : `<span style="color:${meaColor};font-weight:600;">${meaReal}%</span>`;
+    const provChip = ({
+      irp: '<span class="provenance-pill irp">IRP</span>',
+      hta: '<span class="provenance-pill hta">HTA</span>',
+      tender: '<span class="provenance-pill tender">Tender</span>',
+      list: '<span class="provenance-pill list">Free</span>',
+      mea: '<span class="provenance-pill mea">MEA</span>',
+    })[c.prov] || '';
+
+    return `<tr class="row" data-code="${c.code}">
+      <td>
+        <div class="country-cell">
+          <span class="country-code">${c.code}</span>
+          <div>
+            <div class="country-name">${c.name}</div>
+            <div class="country-region">Wave ${c.w} · ${({AM:'Americas',EU:'Europe',AS:'Asia',GCC:'GCC',LA:'LatAm',EM:'Emerging'})[c.r]}</div>
+          </div>
+        </div>
+      </td>
+      <td>${statusPill}</td>
+      <td class="num">${c.planYTD > 0 ? '$'+c.planYTD.toFixed(1)+'M' : '<span style="color:var(--muted);">—</span>'}</td>
+      <td class="num">${c.actYTD > 0 ? '$'+c.actYTD.toFixed(1)+'M' : '<span style="color:var(--muted);">—</span>'}</td>
+      <td class="num">${varPct !== null ? `<span class="${(+varAbs)>=0?'var-pos':'var-neg'}">${(+varAbs)>=0?'+':'−'}$${Math.abs(varAbs)}M</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+      <td class="num">${varPct !== null ? `<span class="${(+varPct)>=0?'var-pos':'var-neg'}">${(+varPct)>=0?'+':''}${varPct}%</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+      <td class="num">${meaCell}</td>
+      <td>${provChip}</td>
+      <td class="num">${c.planFY > 0 ? '$'+c.ffFY.toFixed(1)+'M' : '<span style="color:var(--muted);">—</span>'}</td>
+      <td class="num">${ffVarPct !== null ? `<span class="${(+ffVarAbs)>=0?'var-pos':'var-neg'}">${(+ffVarAbs)>=0?'+':'−'}$${Math.abs(ffVarAbs)}M</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+      <td>${trend ? sparkline(trend, {color: c.status==='off'?'var(--deduction)':c.status==='risk'?'var(--warn)':'var(--net)'}) : '<span style="color:var(--muted);">—</span>'}</td>
+      <td>${actionBtn}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('perfTable').innerHTML = `
+    <thead><tr>
+      <th>Country</th>
+      <th>Status</th>
+      <th class="num">YTD Plan (LSO)</th>
+      <th class="num">YTD Actual</th>
+      <th class="num">Δ $</th>
+      <th class="num">Δ %</th>
+      <th class="num" id="th-mea">MEA Real.</th>
+      <th id="th-rate">Rate</th>
+      <th class="num">FY26 Forecast</th>
+      <th class="num">Gap to Plan</th>
+      <th>Trend</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  `;
+
+  document.querySelectorAll('#perfTable tr.row').forEach(r => {
+    r.addEventListener('click', () => openPerfModal(r.dataset.code));
+  });
+}
+
+// ================================================================
+// REALLOCATION WORKBENCH
+// ================================================================
+const SHORTFALL = [
+  { code:'FR', name:'France', varAbs:-3.0, varPct:-30.0, note:'Formulary rollout delayed in 4 regions' },
+  { code:'JP', name:'Japan',  varAbs:-1.4, varPct:-54.0, note:'MHLW pricing review Q4' },
+  { code:'ES', name:'Spain',  varAbs:-0.8, varPct:-8.0,  note:'Slower private-market uptake' },
+];
+
+const ACTIONS = {
+  FR: [
+    {
+      tag:'rebal', tagLabel:'Reallocate', title:'Redirect $2.4M FR expectation to Italy + UK upside',
+      desc:'Italy is +$0.7M YTD and trending +11%; UK is +$1.1M YTD and trending +8%. Combined, they can absorb <b>$2.4M</b> of France\'s $3.0M shortfall without triggering IRP exposure — neither is referenced by France. Remaining $0.6M reserved against Q4 France catch-up.',
+      impact:'+$2.4M', impactNeg:false,
+      je:[
+        {acct:'4100-FR', desc:'Revenue accrual — France', dr:'', cr:'−$2.4M'},
+        {acct:'4100-IT', desc:'Revenue accrual — Italy',  dr:'+$1.3M', cr:''},
+        {acct:'4100-UK', desc:'Revenue accrual — UK',     dr:'+$1.1M', cr:''},
+      ],
+      audit:'True-up #TU-2026-Q3-047 · reallocation preserves global FY26 forecast',
+      approver:'Global Pricing Lead',
+      approverName:'M. Grosberg',
+      sla:'Auto-post if approved within 2 business days',
+    },
+    {
+      tag:'accept', tagLabel:'Accept &amp; recompute', title:'Accept shortfall, recompute global forecast &amp; IRP exposure',
+      desc:'Book the $3.0M miss to FY26 forecast. Recompute IRP referenced-price cascade through PL, TR, SA. Downstream erosion projected in <b>Projected Erosion</b> tab. Preserves audit clarity but forgoes recapture.',
+      impact:'Material miss', impactNeg:true,
+      je:[
+        {acct:'4100-FR', desc:'Revenue accrual — France', dr:'', cr:'−$3.0M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve',      dr:'', cr:'projected'},
+      ],
+      audit:'True-up #TU-2026-Q3-048 · no reallocation · triggers Projected Erosion recompute',
+      approver:'Finance Controller · Global',
+      approverName:'S. Rao',
+      sla:'Q3 close cutoff · 2026-10-05',
+    },
+    {
+      tag:'negotiate', tagLabel:'MEA renegotiate', title:'Trigger France MEA renegotiation to defend published list',
+      desc:'Global GTN identifies <b>3 MEA levers</b> available with French CEPP: outcomes-based rebate expansion (+4% net discount, confidential), volume-tier extension, and Q1 rebate reset. Estimated 62% probability of closing the gap without cutting list. If successful, downstream IRP erosion <b>avoided</b>.',
+      impact:'+$3.0M target', impactNeg:false,
+      je:[
+        {acct:'4100-FR', desc:'Revenue accrual — France (defended)', dr:'', cr:''},
+        {acct:'5200-FR', desc:'MEA rebate accrual — France',         dr:'', cr:'+$1.2M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve (avoided)',       dr:'reversed', cr:''},
+      ],
+      audit:'Requires Global Access + CEPP approval · 3–4 week negotiation window',
+      approver:'VP Global Market Access',
+      approverName:'A. Patel',
+      sla:'Off-cycle · executive escalation required',
+    },
+    {
+      tag:'writeback', tagLabel:'Post to LSO', title:'Post variance back to LSO plan baseline for next cycle',
+      desc:'Write the $3.0M France variance <b>back to GPM-LSO</b> as a plan-baseline adjustment. Next launch-sequence re-solve will use the corrected FR demand curve, tightening the plan for FY27. This closes the loop between actuals and the optimizer — the piece GPM alone does not do.',
+      impact:'Baseline updated', impactNeg:false,
+      je:[
+        {acct:'GPM-LSO',    desc:'Plan baseline v3.2 → v3.3',                dr:'', cr:''},
+        {acct:'FR-demand',  desc:'Demand curve adj · −22% Q3 realized',      dr:'', cr:''},
+        {acct:'FR-launch',  desc:'Launch date adj · Q2-27 (was Q4-26)',      dr:'', cr:''},
+      ],
+      audit:'Write-back #WB-2026-Q3-012 · flows to GPM · triggers LSO re-solve on next cycle',
+      approver:'GPM Steward + Global Pricing Lead',
+      approverName:'C. Lonsdale · M. Grosberg',
+      sla:'Applies to LSO v3.3 build · 2026-10-15',
+    },
+  ],
+  ES: [
+    {
+      tag:'rebal', tagLabel:'Reallocate', title:'Absorb ES $0.8M shortfall from IT upside',
+      desc:'Italy has $2.4M unallocated upside YTD. Redirect $0.8M of ES expectation to IT. IT is referenced by ES, so this preserves the natural reference chain.',
+      impact:'+$0.8M', impactNeg:false,
+      je:[
+        {acct:'4100-ES', desc:'Revenue accrual — Spain', dr:'', cr:'−$0.8M'},
+        {acct:'4100-IT', desc:'Revenue accrual — Italy', dr:'+$0.8M', cr:''},
+      ],
+      audit:'True-up #TU-2026-Q3-049',
+      approver:'Global Pricing Lead',
+      approverName:'M. Grosberg',
+      sla:'Auto-post if approved within 2 business days',
+    },
+    {
+      tag:'accept', tagLabel:'Accept &amp; recompute', title:'Accept ES shortfall',
+      desc:'ES referenced by fewer countries (PL, GR, TR partial). Downstream erosion minimal — see Projected Erosion for detail.',
+      impact:'Minor miss', impactNeg:true,
+      je:[
+        {acct:'4100-ES', desc:'Revenue accrual — Spain', dr:'', cr:'−$0.8M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve',     dr:'', cr:'projected'},
+      ],
+      audit:'True-up #TU-2026-Q3-050',
+      approver:'Finance Controller · Global',
+      approverName:'S. Rao',
+      sla:'Q3 close cutoff · 2026-10-05',
+    },
+    {
+      tag:'writeback', tagLabel:'Post to LSO', title:'Post ES demand variance to LSO baseline',
+      desc:'Feed ES $0.8M shortfall as a demand curve adjustment to GPM-LSO. Small enough that next re-solve may not shift launch dates, but keeps the baseline honest.',
+      impact:'Baseline updated', impactNeg:false,
+      je:[
+        {acct:'GPM-LSO',    desc:'Plan baseline v3.2 → v3.3',       dr:'', cr:''},
+        {acct:'ES-demand',  desc:'Demand curve adj · −6% Q3',        dr:'', cr:''},
+      ],
+      audit:'Write-back #WB-2026-Q3-013',
+      approver:'GPM Steward',
+      approverName:'C. Lonsdale',
+      sla:'LSO v3.3 build · 2026-10-15',
+    },
+  ],
+  JP: [
+    {
+      tag:'accept', tagLabel:'Accept &amp; monitor', title:'Accept JP $1.4M shortfall pending MHLW review',
+      desc:'JP is at Wave 2 launch; MHLW pricing review in Q4 will re-baseline. Recommend monitoring rather than immediate reallocation. Downstream: KR references JP via A7 basket — recompute KR forecast on next cycle.',
+      impact:'Deferred', impactNeg:true,
+      je:[
+        {acct:'4100-JP', desc:'Revenue accrual — Japan', dr:'', cr:'−$1.4M'},
+        {acct:'4900-IRP',desc:'IRP erosion reserve',     dr:'', cr:'projected'},
+      ],
+      audit:'Review after 2026-11 MHLW cycle',
+      approver:'Finance Controller · APAC',
+      approverName:'T. Nakamura',
+      sla:'Hold until MHLW cycle · 2026-11',
+    },
+    {
+      tag:'writeback', tagLabel:'Post to LSO', title:'Flag JP for LSO re-solve after MHLW ruling',
+      desc:'Set a conditional write-back that triggers automatically when MHLW publishes its Q4 ruling. LSO will then re-solve JP + downstream KR pricing based on the new baseline.',
+      impact:'Conditional', impactNeg:false,
+      je:[
+        {acct:'GPM-LSO',    desc:'Conditional trigger armed',          dr:'', cr:''},
+        {acct:'JP-baseline',desc:'Awaiting MHLW Q4 ruling',            dr:'', cr:''},
+      ],
+      audit:'Write-back #WB-2026-Q3-014 · armed, awaiting trigger',
+      approver:'GPM Steward + APAC Access',
+      approverName:'C. Lonsdale',
+      sla:'Fires on MHLW publication',
+    },
+  ],
+};
+
+// Decision log — prior true-ups posted this quarter
+const DECISION_LOG = [
+  { id:'TU-2026-Q2-089', date:'2026-08-14', country:'Netherlands', action:'Reallocate', amount:'−$0.4M', approver:'M. Grosberg', status:'Posted' },
+  { id:'TU-2026-Q2-091', date:'2026-08-20', country:'Sweden',      action:'MEA renegotiate', amount:'+$0.6M', approver:'A. Patel',   status:'In negotiation' },
+  { id:'WB-2026-Q2-008', date:'2026-08-28', country:'Germany',     action:'Post to LSO',     amount:'Baseline v3.1→v3.2', approver:'C. Lonsdale', status:'Posted' },
+  { id:'TU-2026-Q3-041', date:'2026-09-03', country:'UK',          action:'Reallocate',      amount:'+$0.5M ↔ IT', approver:'M. Grosberg', status:'Posted' },
+  { id:'TU-2026-Q3-045', date:'2026-09-18', country:'Italy',       action:'Accept',          amount:'+$0.3M variance', approver:'S. Rao',    status:'Posted' },
+];
+
+function openRebal(code) {
+  selectedRebal = code;
+  switchTab('rebalance');
+  renderRebalList();
+  renderRebalDetail();
+}
+
+function renderRebalList() {
+  document.getElementById('rebalList').innerHTML = SHORTFALL.map(s => `
+    <div class="rebal-country ${s.code === selectedRebal ? 'selected' : ''}" data-code="${s.code}" title="Select this country to see its ranked reallocation actions. Each option's dollar impact and journal entry appear on the right.">
+      <div>
+        <div class="rebal-country-name">${s.name}</div>
+        <div class="rebal-country-sub">${s.note}</div>
+      </div>
+      <div class="rebal-var" style="color:var(--deduction-ink);">−$${Math.abs(s.varAbs).toFixed(1)}M<br><span style="font-size:10px;color:var(--muted);font-family:var(--sans);">${s.varPct}%</span></div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.rebal-country').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedRebal = el.dataset.code;
+      renderRebalList();
+      renderRebalDetail();
+    });
+  });
+}
+
+function renderRebalDetail() {
+  const actions = ACTIONS[selectedRebal] || [];
+  const country = SHORTFALL.find(s => s.code === selectedRebal);
+  const detail = document.getElementById('rebalDetail');
+  detail.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:700;">Shortfall country</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+        <h2 style="font-size:22px;font-weight:700;color:var(--ink);margin:0;">${country.name}</h2>
+        <span class="status-pill off">Off-plan · ${country.varPct}%</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">${country.note} · YTD variance <b style="color:var(--deduction-ink);font-family:var(--mono);">−$${Math.abs(country.varAbs).toFixed(1)}M</b></div>
+    </div>
+
+    ${actions.map((a, i) => {
+      const initials = (a.approverName||'').split(/[·+]/)[0].trim().split(/\s+/).map(s=>s[0]||'').join('').slice(0,2).toUpperCase() || '—';
+      const jeLabel = a.tag === 'writeback' ? 'Write-back preview' : 'Journal entry preview';
+      const applyLabel = a.tag === 'writeback' ? 'Post to GPM' : 'Apply &amp; Post';
+      return `
+      <div class="action-card">
+        <div class="action-card-head">
+          <div>
+            <span class="action-tag ${a.tag}">${a.tagLabel}</span>
+            <div class="action-title">Option ${i+1}: ${a.title}</div>
+          </div>
+          <div>
+            <div class="action-impact-label">Net impact</div>
+            <div class="action-impact-val ${a.impactNeg?'neg':''}">${a.impact}</div>
+          </div>
+        </div>
+        <div class="action-body">
+          <div class="action-desc">${a.desc}</div>
+          <div class="je-preview">
+            <span class="je-label">${jeLabel}</span>
+            ${a.je.map(row => `<div class="je-row"><span>${row.acct}</span><span style="color:var(--muted);">${row.desc}</span><span class="pos">${row.dr||''}</span><span class="neg">${row.cr||''}</span></div>`).join('')}
+          </div>
+          <div class="approver-row">
+            <div class="approver-avatar">${initials}</div>
+            <div>
+              <div class="approver-label">Approver</div>
+              <div class="approver-name">${a.approverName} <span style="color:var(--muted);font-weight:400;font-size:11px;">· ${a.approver}</span></div>
+            </div>
+            <div class="approver-sla">${a.sla}</div>
+          </div>
+        </div>
+        <div class="action-footer">
+          <div class="action-audit">${a.audit}</div>
+          <div>
+            <button class="btn" style="padding:5px 12px;font-size:12px;">Simulate</button>
+            <button class="btn btn-primary" style="padding:5px 12px;font-size:12px;">${applyLabel}</button>
+          </div>
+        </div>
+      </div>
+    `;}).join('')}
+
+    <div class="card decision-log-card">
+      <div class="card-head">
+        <div class="card-title">Decision Log <span class="sub">this quarter · country-level true-ups &amp; write-backs</span></div>
+        <span style="font-size:11px;color:var(--muted);"><b style="color:var(--ink);">${DECISION_LOG.length}</b> entries · click any to inspect</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="decision-log-table">
+          <thead><tr>
+            <th>ID</th><th>Date</th><th>Country</th><th>Action</th><th>Amount / Effect</th><th>Approver</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+          ${DECISION_LOG.map(d => `
+            <tr>
+              <td><span class="log-id">${d.id}</span></td>
+              <td style="color:var(--muted);font-family:var(--mono);font-size:11.5px;">${d.date}</td>
+              <td><b>${d.country}</b></td>
+              <td>${d.action}</td>
+              <td style="font-family:var(--mono);font-variant-numeric:tabular-nums;">${d.amount}</td>
+              <td style="color:var(--ink-2);">${d.approver}</td>
+              <td><span class="log-status ${d.status==='Posted'?'posted':'pending'}">${d.status}</span></td>
+            </tr>
+          `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ================================================================
+// LSO PLAN VS ACTUALS GANTT
+// ================================================================
+const LSEQ_ORDER = ['US','DE','UK','FR','IT','ES','JP','NL','SE','KR','AU','CA','PL','GR','TR','SA','AE','BR','MX','IN'];
+const HTA_MILESTONES = {
+  DE:{month:6,label:'G-BA'}, FR:{month:8,label:'HAS'}, UK:{month:4,label:'NICE'},
+  IT:{month:9,label:'AIFA'}, ES:{month:10,label:'CIPM'}, JP:{month:12,label:'PMDA'},
+  AU:{month:11,label:'PBAC'}, CA:{month:9,label:'CADTH'}, KR:{month:12,label:'HIRA'},
+  BR:{month:14,label:'CMED'}, SA:{month:13,label:'SFDA'}, PL:{month:15,label:'AOTMiT'},
+  GR:{month:16,label:'EOF'}, US:{month:2,label:'FDA'},
+};
+
+const TODAY_MONTH = 9; // Sep 2026 = M9 of the launch calendar
+
+function renderLseq() {
+  const head = document.getElementById('lseqHead');
+  head.innerHTML = '';
+  for (let i = 0; i < 36; i++) {
+    const div = document.createElement('div');
+    div.className = 'lseq-month' + (i % 3 === 0 ? ' lseq-quarter-marker' : '');
+    if (i % 6 === 0) {
+      const year = 2026 + Math.floor(i / 12);
+      const half = i % 12 === 0 ? 'H1' : 'H2';
+      div.textContent = `${half}·${String(year).slice(2)}`;
+    }
+    head.appendChild(div);
+  }
+
+  const rows = document.getElementById('lseqRows');
+  rows.innerHTML = '';
+
+  LSEQ_ORDER.forEach(code => {
+    const c = COUNTRIES.find(x => x.code === code);
+    const rowWrap = document.createElement('div');
+    rowWrap.style.display = 'grid';
+    rowWrap.style.gridTemplateColumns = '180px 1fr 130px';
+
+    const nameCell = document.createElement('div');
+    nameCell.className = 'lseq-country-cell';
+    nameCell.innerHTML = `
+      <span class="wave-tag w${c.w}">W${c.w}</span>
+      <span>${c.name}</span>
+    `;
+
+    const tl = document.createElement('div');
+    tl.className = 'lseq-timeline-cell';
+
+    const duration = 18;
+
+    // LSO planned ghost bar
+    const planBar = document.createElement('div');
+    planBar.className = 'lseq-bar-plan';
+    planBar.style.left = `calc(${(c.launchM_plan / 36) * 100}% + 2px)`;
+    planBar.style.width = `calc(${(duration / 36) * 100}% - 4px)`;
+    planBar.innerHTML = `LSO · M+${c.launchM_plan}`;
+    tl.appendChild(planBar);
+
+    // Actual (or current planning) bar
+    if (c.launchM_actual !== null) {
+      const delta = c.launchM_actual - c.launchM_plan;
+      const kind = delta === 0 ? 'on' : (delta < 0 ? 'ahead' : 'behind');
+      const actBar = document.createElement('div');
+      actBar.className = `lseq-bar-actual ${kind}`;
+      actBar.style.left = `calc(${(c.launchM_actual / 36) * 100}% + 2px)`;
+      actBar.style.width = `calc(${(duration / 36) * 100}% - 4px)`;
+      actBar.innerHTML = `${c.code} · ${c.launched ? 'Actual' : 'Current'} · M+${c.launchM_actual}`;
+      actBar.style.cursor = 'help';
+      const fyImpact = c.launched && c.planFY > 0 ? (c.ffFY - c.planFY) : 0;
+      const deltaTxt = delta === 0 ? 'on plan' : (delta > 0 ? `+${delta} months (behind)` : `${delta} months (ahead)`);
+      const impactTxt = fyImpact === 0 ? '$0M' : (fyImpact > 0 ? '+$' : '−$') + Math.abs(fyImpact).toFixed(1) + 'M FY';
+      actBar.addEventListener('mouseenter', e => showTip(e, `${c.name} · launch delta`,
+        `LSO said M+${c.launchM_plan} · Reality is M+${c.launchM_actual} · Δ ${deltaTxt} · FY revenue impact ${impactTxt}`));
+      actBar.addEventListener('mousemove', moveTip);
+      actBar.addEventListener('mouseleave', hideTip);
+      tl.appendChild(actBar);
+    }
+
+    // HTA milestone
+    if (HTA_MILESTONES[code]) {
+      const mm = HTA_MILESTONES[code];
+      const baseM = c.launchM_actual !== null ? c.launchM_actual : c.launchM_plan;
+      const absM = baseM + mm.month;
+      if (absM < 36) {
+        const dot = document.createElement('div');
+        dot.className = 'lseq-milestone';
+        dot.style.left = `calc(${(absM / 36) * 100}% - 5px)`;
+        dot.title = `${c.name} · ${mm.label}`;
+        tl.appendChild(dot);
+      }
+    }
+
+    // Today line
+    const today = document.createElement('div');
+    today.className = 'today-line';
+    today.style.left = `calc(${(TODAY_MONTH / 36) * 100}%)`;
+    tl.appendChild(today);
+
+    // Diff cell
+    const diff = document.createElement('div');
+    if (c.launchM_actual === null) {
+      diff.className = 'lseq-diff-cell pending';
+      diff.innerHTML = `Pre-launch<div class="diff-sub">no actual yet</div>`;
+    } else {
+      const d = c.launchM_actual - c.launchM_plan;
+      const kind = d === 0 ? 'on' : (d < 0 ? 'ahead' : 'behind');
+      const revImpact = c.launched && c.planFY > 0 ? (c.ffFY - c.planFY) : 0;
+      diff.className = `lseq-diff-cell ${kind}`;
+      diff.innerHTML = `${d === 0 ? 'On plan' : (d > 0 ? '+' : '') + d + ' mo'}<div class="diff-sub">${revImpact === 0 ? '' : (revImpact > 0 ? '+' : '−') + '$' + Math.abs(revImpact).toFixed(1) + 'M FY'}</div>`;
+    }
+
+    rowWrap.appendChild(nameCell);
+    rowWrap.appendChild(tl);
+    rowWrap.appendChild(diff);
+    rows.appendChild(rowWrap);
+  });
+}
+
+// ================================================================
+// IRP EROSION FORECAST — cascade + timeline
+// ================================================================
+const CASCADE_FR = [
+  { code:'FR', name:'France',       rule:'Source · demand shortfall', month:0,  baseNet:9400, weight:1.00 },
+  { code:'ES', name:'Spain',        rule:'mean(FR,DE,IT,UK)',         month:5,  baseNet:8200, weight:0.20 },
+  { code:'IT', name:'Italy',        rule:'AIFA · FR ref',             month:6,  baseNet:8800, weight:0.10 },
+  { code:'GR', name:'Greece',       rule:'mean(3 lowest EU)',         month:9,  baseNet:6800, weight:0.33 },
+  { code:'PL', name:'Poland',       rule:'mean(3 lowest EU)',         month:11, baseNet:7100, weight:0.33 },
+  { code:'TR', name:'Turkey',       rule:'min(ES,FR,GR,IT,PT)',       month:14, baseNet:5400, weight:0.60 },
+  { code:'SA', name:'Saudi Arabia', rule:'min(30-country basket)',    month:15, baseNet:6300, weight:0.55 },
+  { code:'BR', name:'Brazil',       rule:'CMED rule VI',              month:18, baseNet:5700, weight:0.25 },
+];
+const CASCADE_DE = [
+  { code:'DE', name:'Germany',      rule:'Source · AMNOG',            month:0,  baseNet:11800, weight:1.00 },
+  { code:'NL', name:'Netherlands',  rule:'mean(BE,DE,FR,UK)',         month:6,  baseNet:10400, weight:0.25 },
+  { code:'ES', name:'Spain',        rule:'mean(FR,DE,IT,UK,PT)',      month:8,  baseNet:8200,  weight:0.20 },
+  { code:'FR', name:'France',       rule:'CEPP · DE ref',             month:9,  baseNet:9400,  weight:0.15 },
+  { code:'GR', name:'Greece',       rule:'mean(3 lowest EU)',         month:11, baseNet:6800,  weight:0.33 },
+  { code:'PL', name:'Poland',       rule:'mean(3 lowest EU)',         month:13, baseNet:7100,  weight:0.33 },
+  { code:'SA', name:'Saudi Arabia', rule:'min(30-country basket)',    month:14, baseNet:6300,  weight:0.90 },
+  { code:'TR', name:'Turkey',       rule:'min(ES,FR,GR,IT,PT)',       month:16, baseNet:5400,  weight:0.60 },
+];
+
+let simCascade = CASCADE_FR;
+let simPct = -8; // in forecast mode, FR's demand-implied net erosion is ~8%
+let simSourceName = 'France';
+
+function renderCascade() {
+  const svg = document.getElementById('cascadeSvg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const W = 720, H = 480;
+  const padL = 90, padR = 60, padT = 40, padB = 60;
+  const chartW = W - padL - padR, chartH = H - padT - padB;
+
+  const pctFraction = simPct / 100;
+  const items = simCascade.map(c => {
+    const cf = c.weight * pctFraction;
+    const newNet = Math.round(c.baseNet * (1 + cf));
+    return { ...c, newNet, delta: newNet - c.baseNet, pctDelta: cf * 100 };
+  });
+
+  const maxPrice = 13000;
+  const yFor = v => padT + chartH - (v / maxPrice) * chartH;
+
+  [0, 3000, 6000, 9000, 12000].forEach(v => {
+    const l = document.createElementNS(ns, 'path');
+    l.setAttribute('class', 'gridline');
+    l.setAttribute('d', `M${padL},${yFor(v)} L${W-padR},${yFor(v)}`);
+    svg.appendChild(l);
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('class', 'axis-tick');
+    t.setAttribute('x', padL - 6);
+    t.setAttribute('y', yFor(v) + 3);
+    t.setAttribute('text-anchor', 'end');
+    t.textContent = `€${(v/1000)}k`;
+    svg.appendChild(t);
+  });
+
+  const barW = chartW / items.length * 0.55;
+  const gap = chartW / items.length;
+
+  items.forEach((c, i) => {
+    const x = padL + i * gap + (gap - barW) / 2;
+    const ghost = document.createElementNS(ns, 'rect');
+    ghost.setAttribute('x', x); ghost.setAttribute('y', yFor(c.baseNet));
+    ghost.setAttribute('width', barW);
+    ghost.setAttribute('height', chartH - (yFor(c.baseNet) - padT));
+    ghost.setAttribute('fill', '#EDF0F4');
+    ghost.setAttribute('stroke', '#D5DBE3');
+    ghost.setAttribute('stroke-width', '1');
+    ghost.setAttribute('stroke-dasharray', '3 2');
+    svg.appendChild(ghost);
+
+    const bar = document.createElementNS(ns, 'rect');
+    bar.setAttribute('x', x); bar.setAttribute('y', yFor(c.newNet));
+    bar.setAttribute('width', barW);
+    bar.setAttribute('height', chartH - (yFor(c.newNet) - padT));
+    bar.setAttribute('fill', i === 0 ? '#0A2540' : (simPct < 0 ? '#DC4A48' : '#1FA37E'));
+    bar.setAttribute('rx', 2);
+    svg.appendChild(bar);
+
+    const vl = document.createElementNS(ns, 'text');
+    vl.setAttribute('class', 'value-label');
+    vl.setAttribute('x', x + barW / 2);
+    vl.setAttribute('y', yFor(c.newNet) - 6);
+    vl.setAttribute('text-anchor', 'middle');
+    vl.textContent = `€${(c.newNet/1000).toFixed(1)}k`;
+    svg.appendChild(vl);
+
+    if (i > 0 && Math.abs(c.pctDelta) > 0.1) {
+      const dl = document.createElementNS(ns, 'text');
+      dl.setAttribute('class', 'delta-label');
+      dl.setAttribute('x', x + barW / 2);
+      dl.setAttribute('y', yFor(c.newNet) - 20);
+      dl.setAttribute('text-anchor', 'middle');
+      dl.textContent = (c.pctDelta > 0 ? '+' : '') + c.pctDelta.toFixed(1) + '%';
+      svg.appendChild(dl);
+    }
+
+    const cl = document.createElementNS(ns, 'text');
+    cl.setAttribute('class', 'country-label');
+    cl.setAttribute('x', x + barW / 2);
+    cl.setAttribute('y', H - padB + 16);
+    cl.setAttribute('text-anchor', 'middle');
+    cl.setAttribute('font-weight', '700');
+    cl.setAttribute('fill', '#0F2240');
+    cl.textContent = c.code;
+    svg.appendChild(cl);
+
+    const rl = document.createElementNS(ns, 'text');
+    rl.setAttribute('class', 'rule-label');
+    rl.setAttribute('x', x + barW / 2);
+    rl.setAttribute('y', H - padB + 30);
+    rl.setAttribute('text-anchor', 'middle');
+    rl.textContent = i === 0 ? 'source' : `M+${c.month}`;
+    svg.appendChild(rl);
+
+    if (i > 0) {
+      const prevX = padL + (i-1) * gap + gap / 2;
+      const thisX = x + barW / 2;
+      const y = padT - 12;
+      const path = document.createElementNS(ns, 'path');
+      path.setAttribute('class', 'connector');
+      path.setAttribute('d', `M${prevX + barW/2 + 2},${yFor(items[i-1].newNet) - 24} C${(prevX+thisX)/2},${y} ${(prevX+thisX)/2},${y} ${thisX - barW/2 - 2},${yFor(c.newNet) - 24}`);
+      svg.appendChild(path);
+    }
+  });
+
+  const title = document.createElementNS(ns, 'text');
+  title.setAttribute('x', padL); title.setAttribute('y', padT - 18);
+  title.setAttribute('fill', '#67728A'); title.setAttribute('font-size', '11');
+  title.setAttribute('font-weight', '700'); title.setAttribute('letter-spacing', '0.08em');
+  title.textContent = 'PROPAGATION SEQUENCE →';
+  svg.appendChild(title);
+
+  const sourceCountry = simCascade[0].name;
+  const modeText = erosionMode === 'forecast'
+    ? `${sourceCountry} · ${simPct.toFixed(1)}% net erosion (from demand)`
+    : `${sourceCountry} ${simPct >= 0 ? '+' : ''}${simPct.toFixed(1)}%`;
+  document.getElementById('cascadeSource').textContent = modeText;
+
+  // Summary numbers
+  const source = COUNTRIES.find(x => x.code === simCascade[0].code);
+  const directImpact = source ? Math.round(source.planFY * pctFraction * 10) / 10 : 0;
+  let cascadeImpact = 0;
+  for (let i = 1; i < items.length; i++) {
+    const c = items[i];
+    const country = COUNTRIES.find(x => x.code === c.code);
+    if (country) cascadeImpact += Math.round(country.planFY * (c.pctDelta / 100) * 10) / 10;
+  }
+  const total = directImpact + cascadeImpact;
+  const fmt = v => (v === 0 ? '$0M' : (v > 0 ? '+$' : '−$') + Math.abs(v).toFixed(1) + 'M');
+  document.getElementById('simDirect').textContent = fmt(directImpact);
+  document.getElementById('simDirect').style.color = directImpact < 0 ? 'var(--deduction-ink)' : (directImpact > 0 ? 'var(--net-ink)' : 'var(--ink)');
+  document.getElementById('simCascade').textContent = fmt(cascadeImpact);
+  document.getElementById('simCascade').style.color = cascadeImpact < 0 ? 'var(--deduction-ink)' : (cascadeImpact > 0 ? 'var(--net-ink)' : 'var(--ink)');
+  document.getElementById('simTotal').textContent = fmt(total);
+  document.getElementById('simTotal').style.color = total < 0 ? 'var(--deduction-ink)' : (total > 0 ? 'var(--net-ink)' : 'var(--ink)');
+
+  const sub = erosionMode === 'forecast'
+    ? `${sourceCountry} · demand-implied net erosion`
+    : `${sourceCountry} · hypothetical price change`;
+  document.getElementById('simDirectSub').textContent = sub;
+
+  // Exposed list
+  const exposed = items.slice(1).map(c => {
+    const country = COUNTRIES.find(x => x.code === c.code);
+    return {
+      code: c.code, name: c.name, month: c.month,
+      delta: country ? Math.round(country.planFY * (c.pctDelta / 100) * 10) / 10 : 0,
+    };
+  }).sort((a, b) => a.delta - b.delta);
+
+  document.getElementById('exposedList').innerHTML = exposed.map(e => `
+    <div class="exposed-row">
+      <div class="exposed-name">${e.name}</div>
+      <div class="exposed-when">M+${e.month}</div>
+      <div class="exposed-delta">${e.delta >= 0 ? '+' : '−'}$${Math.abs(e.delta).toFixed(1)}M</div>
+    </div>
+  `).join('');
+}
+
+function renderCascadeTimeline() {
+  const svg = document.getElementById('cascadeTimeline');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const W = 900, H = 220;
+  const padL = 60, padR = 30, padT = 30, padB = 40;
+  const chartW = W - padL - padR, chartH = H - padT - padB;
+
+  const months = 24;
+  const points = [];
+  let cum = 0;
+  for (let m = 0; m <= months; m++) {
+    simCascade.forEach(c => {
+      if (c.month === m && c !== simCascade[0]) {
+        const country = COUNTRIES.find(x => x.code === c.code);
+        if (country) cum += Math.abs(Math.round(country.planFY * ((simPct / 100) * c.weight) * 10) / 10);
+      }
+    });
+    points.push({ m, cum });
+  }
+  const maxCum = Math.max(1, points[points.length-1].cum);
+
+  const xFor = m => padL + (m / months) * chartW;
+  const yFor = v => padT + chartH - (v / maxCum) * chartH;
+
+  [0, maxCum/2, maxCum].forEach(v => {
+    const gl = document.createElementNS(ns, 'path');
+    gl.setAttribute('d', `M${padL},${yFor(v)} L${W-padR},${yFor(v)}`);
+    gl.setAttribute('stroke', '#E1E5EB'); gl.setAttribute('stroke-dasharray', '2 4');
+    gl.setAttribute('fill', 'none');
+    svg.appendChild(gl);
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', padL - 6); t.setAttribute('y', yFor(v) + 3);
+    t.setAttribute('text-anchor', 'end');
+    t.setAttribute('fill', '#67728A'); t.setAttribute('font-family', 'var(--mono)');
+    t.setAttribute('font-size', '10');
+    t.textContent = `$${v.toFixed(1)}M`;
+    svg.appendChild(t);
+  });
+
+  for (let m = 0; m <= months; m += 3) {
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', xFor(m)); t.setAttribute('y', H - padB + 16);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('fill', '#67728A'); t.setAttribute('font-family', 'var(--mono)');
+    t.setAttribute('font-size', '10');
+    t.textContent = 'M+' + m;
+    svg.appendChild(t);
+  }
+
+  let path = `M${xFor(0)},${yFor(0)}`;
+  points.forEach(p => path += ` L${xFor(p.m)},${yFor(p.cum)}`);
+  path += ` L${xFor(months)},${yFor(0)} Z`;
+  const area = document.createElementNS(ns, 'path');
+  area.setAttribute('d', path);
+  area.setAttribute('fill', simPct < 0 ? '#FDEAEA' : '#E1F5EE');
+  svg.appendChild(area);
+
+  let lp = `M${xFor(0)},${yFor(0)}`;
+  points.forEach(p => lp += ` L${xFor(p.m)},${yFor(p.cum)}`);
+  const line = document.createElementNS(ns, 'path');
+  line.setAttribute('d', lp); line.setAttribute('fill', 'none');
+  line.setAttribute('stroke', simPct < 0 ? '#DC4A48' : '#1FA37E');
+  line.setAttribute('stroke-width', '2.5');
+  svg.appendChild(line);
+
+  simCascade.slice(1).forEach(c => {
+    if (c.month > months) return;
+    const x = xFor(c.month);
+    const p = points.find(pt => pt.m === c.month) || { cum: 0 };
+    const y = yFor(p.cum);
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', 5);
+    dot.setAttribute('fill', '#fff');
+    dot.setAttribute('stroke', simPct < 0 ? '#DC4A48' : '#1FA37E');
+    dot.setAttribute('stroke-width', '2');
+    svg.appendChild(dot);
+    const label = document.createElementNS(ns, 'text');
+    label.setAttribute('x', x); label.setAttribute('y', y - 12);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('fill', '#0F2240'); label.setAttribute('font-size', '10');
+    label.setAttribute('font-weight', '700');
+    label.textContent = c.code;
+    svg.appendChild(label);
+  });
+
+  const yl = document.createElementNS(ns, 'text');
+  yl.setAttribute('x', padL); yl.setAttribute('y', padT - 12);
+  yl.setAttribute('fill', '#67728A'); yl.setAttribute('font-size', '10');
+  yl.setAttribute('font-weight', '700'); yl.setAttribute('letter-spacing', '0.08em');
+  yl.textContent = 'CUMULATIVE EROSION ($M)';
+  svg.appendChild(yl);
+}
+
+// ================================================================
+// REFERENCING GRAPH
+// ================================================================
+const GRAPH_LAYOUT = {
+  US:{x:180,y:130}, CA:{x:120,y:200}, DE:{x:440,y:200}, FR:{x:380,y:270},
+  UK:{x:340,y:180}, IT:{x:500,y:290}, ES:{x:400,y:360}, NL:{x:480,y:130},
+  SE:{x:540,y:80}, PL:{x:560,y:230}, GR:{x:530,y:400}, TR:{x:620,y:380},
+  SA:{x:700,y:330}, AE:{x:740,y:250}, BR:{x:250,y:430}, MX:{x:140,y:390},
+  JP:{x:790,y:150}, KR:{x:800,y:220}, AU:{x:820,y:450}, IN:{x:680,y:180},
+};
+let selectedNode = null;
+
+let graphFilter = 'all';
+let graphColorMode = 'exposure'; // default to the differentiator
+
+// Compute cascade-exposure map: how much erosion pressure each country receives
+// from CURRENT shortfalls (FR, ES, JP), following the referencing graph.
+function computeExposure() {
+  const shortfalls = { FR: 3.0, ES: 0.8, JP: 1.4 }; // $M shortfall today
+  const exposure = {}; // code -> pressure score
+  COUNTRIES.forEach(c => { exposure[c.code] = 0; });
+  // BFS: for every country referencing a shortfall source, add weighted pressure
+  Object.entries(shortfalls).forEach(([src, mag]) => {
+    // direct referencers (weight 1)
+    const q = COUNTRIES.filter(c => c.refs.includes(src)).map(c => ({code:c.code, w:1.0}));
+    const seen = new Set([src]);
+    while (q.length) {
+      const {code, w} = q.shift();
+      if (seen.has(code)) continue;
+      seen.add(code);
+      exposure[code] += mag * w;
+      // second-order: countries that reference this one, at reduced weight
+      COUNTRIES.filter(c => c.refs.includes(code)).forEach(c => {
+        if (!seen.has(c.code)) q.push({code:c.code, w:w * 0.4});
+      });
+    }
+  });
+  return exposure;
+}
+function exposureColor(score) {
+  if (score >= 1.5) return '#DC4A48'; // high risk
+  if (score >= 0.6) return '#EA8862'; // medium
+  if (score >= 0.2) return '#F6C9A8'; // light
+  if (score > 0)    return '#FCE8DC'; // touched
+  return '#DDE6EE';                    // untouched
+}
+function exposureLabel(score) {
+  if (score >= 1.5) return 'High cascade risk';
+  if (score >= 0.6) return 'Medium exposure';
+  if (score >= 0.2) return 'Low exposure';
+  if (score > 0)    return 'Touched by cascade';
+  return 'No current exposure';
+}
+
+function renderGraph(filter, colorMode) {
+  if (filter) graphFilter = filter;
+  if (colorMode) graphColorMode = colorMode;
+  const svg = document.getElementById('graphSvg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const included = COUNTRIES.filter(c => {
+    if (graphFilter === 'all') return true;
+    if (graphFilter === 'eu') return c.r === 'EU';
+    if (graphFilter === 'oecd') return ['EU','AM','AS'].includes(c.r);
+    if (graphFilter === 'gcc') return c.r === 'GCC' || c.r === 'EU';
+    return true;
+  });
+  const codes = new Set(included.map(c => c.code));
+  const exposure = computeExposure();
+  const shortfallSources = new Set(['FR','ES','JP']);
+
+  const defs = document.createElementNS(ns, 'defs');
+  defs.innerHTML = `
+    <marker id="arrow" viewBox="0 0 10 10" refX="12" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9AA3B4"/></marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="12" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E6CD2"/></marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="12" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#DC4A48"/></marker>
+  `;
+  svg.appendChild(defs);
+
+  included.forEach(c => {
+    c.refs.forEach(r => {
+      if (!codes.has(r)) return;
+      const from = GRAPH_LAYOUT[c.code], to = GRAPH_LAYOUT[r];
+      if (!from || !to) return;
+      const mx = (from.x + to.x) / 2, my = (from.y + to.y) / 2;
+      const dx = to.x - from.x, dy = to.y - from.y;
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      const perpX = -dy / len * 12, perpY = dx / len * 12;
+      const path = document.createElementNS(ns, 'path');
+      path.setAttribute('class', 'edge');
+      path.dataset.from = c.code; path.dataset.to = r;
+      path.setAttribute('d', `M${from.x},${from.y} Q${mx+perpX},${my+perpY} ${to.x},${to.y}`);
+      path.setAttribute('marker-end', 'url(#arrow)');
+      svg.appendChild(path);
+    });
+  });
+
+  included.forEach(c => {
+    const p = GRAPH_LAYOUT[c.code];
+    if (!p) return;
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'node');
+    g.setAttribute('transform', `translate(${p.x},${p.y})`);
+    g.dataset.code = c.code;
+    const rev = c.planFY || c.list / 300;
+    const rad = Math.max(14, Math.min(34, Math.sqrt(rev * 10) * 1.4));
+    const circ = document.createElementNS(ns, 'circle');
+    circ.setAttribute('r', rad);
+    // Color mode: status uses the same palette as the map; exposure uses cascade heat
+    let fill;
+    if (graphColorMode === 'exposure') {
+      fill = shortfallSources.has(c.code) ? '#0A2540' : exposureColor(exposure[c.code]);
+    } else {
+      fill = statusColor(c.status);
+    }
+    circ.setAttribute('fill', fill);
+    if (graphColorMode === 'exposure' && shortfallSources.has(c.code)) {
+      circ.setAttribute('stroke', '#DC4A48');
+      circ.setAttribute('stroke-width', '3');
+    }
+    g.appendChild(circ);
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('y', 3);
+    if (graphColorMode === 'exposure' && shortfallSources.has(c.code)) {
+      t.setAttribute('fill', '#fff');
+    } else if (graphColorMode === 'exposure' && exposure[c.code] >= 1.5) {
+      t.setAttribute('fill', '#fff');
+    }
+    t.textContent = c.code;
+    g.appendChild(t);
+    g.addEventListener('mouseenter', e => {
+      highlightNode(c.code);
+      let tipBody;
+      if (graphColorMode === 'exposure') {
+        const scoreLabel = shortfallSources.has(c.code)
+          ? `Shortfall source · driving cascade`
+          : `${exposureLabel(exposure[c.code])} (score ${exposure[c.code].toFixed(2)})`;
+        tipBody = `${scoreLabel} · references ${c.refs.length} · referenced by ${COUNTRIES.filter(x=>x.refs.includes(c.code)).length}`;
+      } else {
+        tipBody = `${statusLabel(c.status)} · references ${c.refs.length} · referenced by ${COUNTRIES.filter(x=>x.refs.includes(c.code)).length}`;
+      }
+      showTip(e, c.name, tipBody);
+    });
+    g.addEventListener('mousemove', moveTip);
+    g.addEventListener('mouseleave', () => { hideTip(); clearHighlight(); });
+    g.addEventListener('click', () => { selectedNode = c.code; highlightNode(c.code); });
+    svg.appendChild(g);
+  });
+
+  // Update legend based on mode
+  const legendNote = document.getElementById('graphLegendNote');
+  if (legendNote) {
+    legendNote.textContent = graphColorMode === 'exposure'
+      ? 'Red-outlined nodes are current shortfall sources (FR, ES, JP). Heat = cascade pressure through referencing graph.'
+      : 'Node color = launch status · size ∝ FY26 forecasted net revenue';
+  }
+}
+function highlightNode(code) {
+  const svg = document.getElementById('graphSvg');
+  svg.querySelectorAll('.edge').forEach(e => {
+    e.classList.remove('highlight', 'outbound');
+    e.setAttribute('marker-end', 'url(#arrow)');
+  });
+  svg.querySelectorAll('.node').forEach(n => n.classList.remove('hover'));
+  svg.querySelectorAll('.edge').forEach(e => {
+    if (e.dataset.from === code) { e.classList.add('highlight'); e.setAttribute('marker-end', 'url(#arrowBlue)'); }
+    else if (e.dataset.to === code) { e.classList.add('outbound'); e.setAttribute('marker-end', 'url(#arrowRed)'); }
+  });
+  const node = svg.querySelector(`.node[data-code="${code}"]`);
+  if (node) node.classList.add('hover');
+}
+function clearHighlight() {
+  if (selectedNode) { highlightNode(selectedNode); return; }
+  const svg = document.getElementById('graphSvg');
+  svg.querySelectorAll('.edge').forEach(e => { e.classList.remove('highlight','outbound'); e.setAttribute('marker-end', 'url(#arrow)'); });
+  svg.querySelectorAll('.node').forEach(n => n.classList.remove('hover'));
+}
+
+// ================================================================
+// CONFIG TABLE
+// ================================================================
+function renderRuleTable() {
+  const rows = COUNTRIES.slice(0, 12).map(c => `
+    <tr>
+      <td><b>${c.name}</b> <span style="color:var(--muted);font-family:var(--mono);font-size:11px;">${c.code}</span></td>
+      <td><span class="basket-rule">${RULE_TEXT[c.code] || '—'}</span></td>
+      <td>${c.refs.length ? c.refs.length + ' refs' : '<span style="color:var(--muted);">no ref</span>'}</td>
+      <td>${COUNTRIES.filter(x => x.refs.includes(c.code)).length} downstream</td>
+      <td><span class="provenance-pill ${c.prov}">${({irp:'IRP',hta:'HTA',tender:'Tender',list:'Free'})[c.prov]||c.prov}</span></td>
+      <td style="color:var(--muted);font-size:12px;">2026-08-14</td>
+    </tr>
+  `).join('');
+  const rt = document.getElementById('ruleTable'); if (!rt) return;
+  rt.innerHTML = `
+    <thead><tr><th>Country</th><th>Basket rule</th><th>References</th><th>Referenced by</th><th>Rate type</th><th>Rule refresh</th></tr></thead>
+    <tbody>${rows}</tbody>
+  `;
+}
+
+// ================================================================
+// Tooltip
+// ================================================================
+const ttEl = document.getElementById('tt');
+function showTip(e, title, body) {
+  document.getElementById('ttTitle').textContent = title;
+  document.getElementById('ttBody').textContent = body;
+  ttEl.classList.add('visible');
+  moveTip(e);
+}
+function moveTip(e) { ttEl.style.left = e.clientX + 'px'; ttEl.style.top = e.clientY + 'px'; }
+function hideTip() { ttEl.classList.remove('visible'); }
+
+// ================================================================
+// Tab switching
+// ================================================================
+const TITLES = {
+  overview: 'Overview',
+  performance: 'Country Performance',
+  rebalance: 'Reallocation Workbench',
+  lso: 'LSO Plan vs. Actuals',
+  erosion: 'Projected Erosion',
+  graph: 'Referencing Graph',
+  config: 'Configuration',
+};
+function switchTab(id) {
+  document.querySelectorAll('.nav-item').forEach(t => t.classList.toggle('active', t.dataset.section === id));
+  document.querySelectorAll('.app-section').forEach(s => s.classList.toggle('active', s.id === 'section-' + id));
+  document.getElementById('pageTitleText').textContent = TITLES[id] || id;
+  if (typeof endTour === 'function') endTour();
+  if (id === 'performance') renderPerfTable();
+  if (id === 'rebalance') { renderRebalList(); renderRebalDetail(); }
+  if (id === 'lso') renderLseq();
+  if (id === 'erosion') { renderCascade(); renderCascadeTimeline(); }
+  if (id === 'graph') renderGraph();
+  if (id === 'config') renderRuleTable();
+}
+document.querySelectorAll('.nav-item').forEach(t => {
+  if (t.classList.contains('disabled')) return;
+  t.addEventListener('click', () => { if (t.dataset.section) switchTab(t.dataset.section); });
+});
+
+// Region filter (Region row in the graph controls) & color-mode toggle
+document.querySelectorAll('.graph-filter-row .filter-picker button').forEach(b => {
+  b.addEventListener('click', () => {
+    // Toggle active within the same picker only
+    const parent = b.parentElement;
+    parent.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    if (b.dataset.filter) renderGraph(b.dataset.filter, null);
+    if (b.dataset.color) renderGraph(null, b.dataset.color);
+    selectedNode = null;
+  });
+});
+
+document.querySelectorAll('.toggle-switch').forEach(sw => {
+  sw.addEventListener('click', () => sw.classList.toggle('on'));
+});
+
+// ================================================================
+// GUIDED TOUR
+// ================================================================
+const TOURS = {
+  overview: [
+    { sel: '#pageTitleText', title: 'Start here at close', body: 'Your quarterly starting point. This page tells you how global net revenue is tracking against the LSO plan, and points you at the country most likely to need action this cycle.' },
+    { sel: '.section-kpi-strip', title: 'Read the KPIs left to right', body: 'Actuals vs. Plan tells you if you\'re on track today. Run-rate Forecast is where FY lands if nothing changes. IRP Erosion Baked-in flags whether current misses are leaking through referencing. Reallocation Opportunity is what you can still net across countries this quarter.' },
+    { sel: '.insight.crit', title: 'This is the country to focus on', body: 'When something\'s off, GTN surfaces it here with the driver and the dollar impact. Today it\'s France, $3M short with formulary delays. The buttons take you straight to the tools that fix it.' },
+    { sel: '#worldMap', title: 'See the picture geographically', body: 'Same story, mapped. Red is off-plan, orange is at-risk, green is on-track, grey is pre-launch. Click any country to inspect its snapshot on the right.' },
+    { sel: '#healthBand', title: 'Is the miss concentrated or systemic', body: 'The band splits revenue across on-track, at-risk, and off-plan. Concentrated in one country means you have a specific fix. Spread across many means the plan itself is off, and you\'ll want to post more than one write-back to LSO.' },
+    { sel: '.country-panel-name', title: 'Selected-country snapshot', body: 'YTD plan vs. actuals, launch delta, rate provenance, and downstream referencers for the country you clicked. Big cascade sources (many referencers) matter more to defend than to accept.' },
+    { sel: '.insight.crit .insight-btn', title: 'Next: go diagnose', body: 'Click Review Country Performance to see all countries side by side and open the drill on the one you want to fix.' },
+  ],
+  performance: [
+    { sel: '#pageTitleText', title: 'Diagnose the miss', body: 'The grid where you rank every country by variance and figure out why each miss exists. Reading the row tells you which action in the Workbench will actually work.' },
+    { sel: '#perfTable', title: 'One line per country', body: 'LSO plan, actuals, variance in dollars and percent, plus two GTN-only columns (MEA Realization and Rate) that tell you the type of miss you\'re looking at.' },
+    { sel: '#th-mea', title: 'MEA Realization', body: 'Percentage of planned rebate accrual you\'re actually earning. When this drops while volume holds steady, the payer is taking more discount than modeled. That signal points you toward renegotiating the MEA.' },
+    { sel: '#th-rate', title: 'Rate provenance', body: 'How the country\'s price is derived. IRP-referenced countries cascade when their price moves. HTA countries have more room to renegotiate. Free-market countries are self-contained. Same signal, different action.' },
+    { sel: '#perfTable .spark', title: 'Momentum matters', body: 'Nine months of trend. A downward slope catches a country before it slips into off-plan, so you can act while options are still cheap.' },
+    { sel: '#perfTable tr.row', title: 'Click into the country', body: 'Any row opens a modal with the referencing chain, downstream cascade risk, and the launch delta broken out. This is where you confirm the story before choosing an action.' },
+    { sel: '#perfTable .btn-primary', title: 'Next: enter the Workbench', body: 'For off-plan rows this takes you into the Reallocation Workbench pre-focused on that country. At-risk rows show Review instead. Click Reallocate on France to continue.' },
+  ],
+  rebalance: [
+    { sel: '#pageTitleText', title: 'Decide and post', body: 'Four actions ranked by our recommended fit for the country you selected. You still make the call, and combining actions is often the strongest move (reallocate what fits, then post the rest to LSO).' },
+    { sel: '.rebal-list', title: 'Pick the country you\'re fixing', body: 'Every shortfall country in one list with its variance and driver. France is loaded by default because it\'s the largest gap. Click any row to swap focus.' },
+    { sel: '.action-card', title: 'The four actions map to the type of miss', body: 'Reallocate: use it when a different country is running above plan and can safely absorb the shortfall. Renegotiate the MEA: use it when the payer is taking more discount than modeled while volume holds steady. Accept: use it when the miss is small and the country has few downstream referencers. Post to LSO: use it when the launch was delayed or pulled in, so the underlying plan gets corrected for the next cycle.' },
+    { sel: '.action-card:last-of-type .action-tag', title: 'Post to LSO is often complementary', body: 'Combine it with a Reallocate or Accept when the launch delta is meaningful. Reallocation nets this quarter\'s dollars; the write-back makes next quarter\'s plan smarter, so the same miss doesn\'t recur.' },
+    { sel: '.je-preview', title: 'What actually posts', body: 'The journal entry the action will create, in the same audit format as your GTN accrual true-ups. Reviewing this before you post is the sanity check.' },
+    { sel: '.approver-row', title: 'Who signs off', body: 'Every action names its approver and SLA. Global Pricing Lead for reallocations, Finance Controller for accepts, VP Market Access for MEA moves, GPM Steward for write-backs. Enforces close-cycle discipline automatically.' },
+    { sel: '.decision-log-card', title: 'Everything you posted this quarter', body: 'The audit trail. Every true-up and write-back, who approved it, and its status. This is what carries into the close package and back to LSO.' },
+    { sel: '#section-rebalance .action-footer', title: 'Next: sanity-check before posting', body: 'Before hitting Apply and Post, jump to Projected Erosion and Referencing Graph to confirm the fix actually reduces downstream leakage. Then come back and post.' },
+  ],
+  lso: [
+    { sel: '#pageTitleText', title: 'Diagnostic for launch-timing misses', body: 'Open this view when the country modal\'s launch delta suggests the shortfall is driven by timing. Answers whether the slippage is isolated to one country or spread across a full launch wave.' },
+    { sel: '#section-lso .card > div:first-child', title: 'What you\'re comparing against', body: 'The exact LSO plan version loaded and the date actuals were synced through. Everything below this bar is variance against that baseline.' },
+    { sel: '.lseq-bar-plan', title: 'What LSO planned', body: 'The dashed ghost bars are the launch windows LSO calculated. For pre-launch countries this is all you\'ll see. For launched countries, it\'s the target.' },
+    { sel: '.lseq-bar-actual', title: 'What actually happened', body: 'Solid bars are reality. Green means the country launched ahead of plan, red means behind, blue means on plan. Hover any bar for the exact months and FY revenue impact.' },
+    { sel: '.today-line', title: 'Where you are right now', body: 'The orange line is the current close period. Everything left of it is history. Everything right is projection.' },
+    { sel: '.lseq-diff-cell', title: 'The number that matters', body: 'Per country, months ahead or behind plan and the FY revenue impact of that slippage. If several countries in one wave are red, the plan is systemically optimistic and warrants a wave-wide write-back to LSO.' },
+    { sel: '#section-lso .body', title: 'Next: post the write-back', body: 'If you see slippage, go to the Reallocation Workbench and choose Post to LSO for the affected country so LSO\'s next re-solve uses the corrected launch date.' },
+  ],
+  erosion: [
+    { sel: '#pageTitleText', title: 'Downstream consequence view', body: 'Answers "if I do nothing, how much revenue leaks?" Projected from today\'s actuals and refreshed as new data comes in.' },
+    { sel: '.narrative', title: 'Start with the summary', body: 'Plain-language readout of what\'s leaking, from which source countries, and when it peaks. If the total is large, defending list via MEA renegotiation becomes more valuable than accepting the miss.' },
+    { sel: '#cascadeSvg', title: 'The propagation', body: 'How a shortfall in one country changes the price in the countries that reference it. Each bar is the projected new price. The steeper the drop downstream, the higher the country\'s basket weight in that reference rule.' },
+    { sel: '#cascadeTimeline', title: 'When it lands', body: 'Cumulative leakage over the next 24 months. Dots mark when each downstream country actually reprices. Peak leakage usually lands 11-15 months out when multiple baskets refresh together.' },
+    { sel: '#section-erosion .body', title: 'Next: decide how to defend', body: 'Small projected erosion means Reallocate or Accept is fine. Large erosion changes the answer to Renegotiate MEA (defends the published list) or Post to LSO with a delayed launch to reset the reference point.' },
+  ],
+  graph: [
+    { sel: '#pageTitleText', title: 'The map of who references whom', body: 'Understand cascade exposure before making a pricing call. Especially important when the country you\'re about to cut has many downstream referencers.' },
+    { sel: '#graphColorMode', title: 'Two ways to read the map', body: 'Status colors by launch health. Live Cascade Exposure (default) colors by pressure from today\'s actual shortfalls. Red-outlined nodes are the shortfall sources; heat downstream shows where erosion is landing right now.' },
+    { sel: '.graph-filter-row .filter-picker:first-child', title: 'Focus one market cluster', body: 'Narrow to EU, OECD, or GCC. GCC in particular has the biggest inbound edges because Saudi and UAE reference broad country baskets, so a single AMNOG-style cut in Germany can hit them hardest.' },
+    { sel: '#graphSvg', title: 'Read a country\'s exposure', body: 'Hover any node. Red incoming edges are countries that reference this one (your downstream cascade risk if you cut its price). Blue outgoing edges are countries this one references (its upstream anchors).' },
+    { sel: '.graph-legend', title: 'How to size it up', body: 'Node size is proportional to forecasted revenue. A large red-heat node is a country losing real dollars from the current shortfalls, which is where defending list via MEA renegotiation pays off most.' },
+    { sel: '#section-graph .body', title: 'Next: use this to inform the fix', body: 'If the exposure view lights up big-revenue countries, come back to the Workbench and prefer the action that defends list (MEA renegotiate) over the action that cuts it (Accept).' },
+  ],
+  config: [
+    { sel: '#pageTitleText', title: 'Set the tracking behavior', body: 'The four switches shape how Global GTN reads variance and cascades. Set once when you onboard a product, revisit at each regulatory shift.' },
+    { sel: '.toggle-row', title: 'US MFN', body: 'Under EO 14297 (May 2025), Medicare and new Commercial launches use the lowest OECD reference. Turn this on to model MFN\'s impact on your US book alongside the ex-US picture.' },
+    { sel: '#section-config .toggle-row:nth-child(2)', title: 'EU JCA', body: 'Joint Clinical Assessment changes HTA timing across Europe. Live for oncology and ATMPs since Jan 2025, orphans in 2028, all centrally-authorized products by 2030. Affects when your delta-vs-LSO numbers should stabilize per country.' },
+    { sel: '#section-config .toggle-row:nth-child(3)', title: 'MEA confidential mode', body: 'On means cascades run on published list price (industry practice, protects confidential net). Off means cascades run on the MEA-adjusted net (aggressive, for internal scenario planning).' },
+    { sel: '.toggle-row:last-child', title: 'Auto-post true-ups', body: 'On means country-level accrual adjustments post automatically each month from variance. Off means every reallocation goes through a review-and-approve gate first. Most orgs run this off until they trust the system.' },
+  ],
+};
+
+let tourSteps = null, tourIdx = 0;
+
+function startTour() {
+  const activeSection = document.querySelector('.app-section.active');
+  const tabId = activeSection ? activeSection.id.replace('section-', '') : 'overview';
+  tourSteps = TOURS[tabId];
+  if (!tourSteps || !tourSteps.length) return;
+  tourIdx = 0;
+  document.getElementById('tourOverlay').classList.add('active');
+  showTourStep();
+}
+
+function showTourStep() {
+  const step = tourSteps[tourIdx];
+  if (!step) return;
+  let target = document.querySelector(step.sel);
+  if (!target) {
+    // Try to skip missing targets forward
+    if (tourIdx < tourSteps.length - 1) { tourIdx++; showTourStep(); return; }
+    endTour(); return;
+  }
+
+  // Scroll into view
+  target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+
+  // Recompute rect after a short scroll delay
+  setTimeout(() => {
+    const rect = target.getBoundingClientRect();
+    const spot = document.getElementById('tourSpot');
+    spot.style.top = Math.max(4, rect.top - 6) + 'px';
+    spot.style.left = Math.max(4, rect.left - 6) + 'px';
+    spot.style.width = (rect.width + 12) + 'px';
+    spot.style.height = (rect.height + 12) + 'px';
+
+    document.getElementById('tourTitle').textContent = step.title;
+    document.getElementById('tourBody').textContent = step.body;
+    document.getElementById('tourStep').textContent = 'Step ' + (tourIdx + 1) + ' of ' + tourSteps.length;
+    document.getElementById('tourPrev').style.visibility = tourIdx === 0 ? 'hidden' : 'visible';
+    document.getElementById('tourNext').textContent = tourIdx === tourSteps.length - 1 ? 'Finish' : 'Next';
+
+    // Position popover
+    const pop = document.getElementById('tourPop');
+    const popW = 340, popH = pop.offsetHeight || 180;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    let top = rect.bottom + 18;
+    let left = rect.left + rect.width / 2 - popW / 2;
+    if (top + popH > vh - 20) top = Math.max(20, rect.top - popH - 18);
+    if (left < 20) left = 20;
+    if (left + popW > vw - 20) left = vw - popW - 20;
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+  }, 250);
+}
+
+function nextStep() {
+  if (!tourSteps) return;
+  if (tourIdx < tourSteps.length - 1) { tourIdx++; showTourStep(); }
+  else endTour();
+}
+function prevStep() {
+  if (!tourSteps) return;
+  if (tourIdx > 0) { tourIdx--; showTourStep(); }
+}
+function endTour() {
+  const ov = document.getElementById('tourOverlay');
+  if (ov) ov.classList.remove('active');
+  tourSteps = null;
+}
+document.addEventListener('keydown', e => {
+  if (!tourSteps) return;
+  if (e.key === 'Escape') endTour();
+  if (e.key === 'ArrowRight') nextStep();
+  if (e.key === 'ArrowLeft') prevStep();
+});
+
+// ================================================================
+// COUNTRY DETAIL MODAL (Country Performance drill)
+// ================================================================
+function openPerfModal(code) {
+  const c = COUNTRIES.find(x => x.code === code);
+  if (!c) return;
+  const varAbs = (c.actYTD - c.planYTD).toFixed(1);
+  const varPct = c.planYTD > 0 ? ((c.actYTD - c.planYTD) / c.planYTD * 100).toFixed(1) : null;
+  const ffVarAbs = (c.ffFY - c.planFY).toFixed(1);
+  const ffVarPct = c.planFY > 0 ? ((c.ffFY - c.planFY) / c.planFY * 100).toFixed(1) : null;
+  const isPos = c.actYTD >= c.planYTD;
+  const referencedBy = COUNTRIES.filter(x => x.refs.includes(code));
+  const isOff = c.status === 'off';
+  const isRisk = c.status === 'risk';
+  const isPending = !c.launched;
+  const statusPill = ({
+    ok:'<span class="status-pill ok">On-track</span>',
+    risk:'<span class="status-pill risk">At-risk</span>',
+    off:'<span class="status-pill off">Off-plan</span>',
+    pending:'<span class="status-pill pending">Pre-launch</span>',
+  })[c.status];
+
+  document.getElementById('modalTitle').textContent = c.name;
+  document.getElementById('modalSubtitle').innerHTML = `${statusPill} · Wave ${c.w} · ${({AM:'Americas',EU:'Europe',AS:'Asia',GCC:'GCC',LA:'LatAm',EM:'Emerging'})[c.r]}`;
+
+  const provFull = ({irp:'IRP-derived (reference-priced)',hta:'HTA-negotiated',tender:'Tender',list:'Free / list',mea:'MEA net'})[c.prov];
+
+  let body = '';
+  if (isPending) {
+    body = `
+      <div class="modal-metric-grid" style="grid-template-columns:repeat(2,1fr);">
+        <div class="modal-metric">
+          <div class="modal-metric-label">LSO Planned launch</div>
+          <div class="modal-metric-value">M+${c.launchM_plan}</div>
+          <div class="modal-metric-sub">from launch calendar start</div>
+        </div>
+        <div class="modal-metric">
+          <div class="modal-metric-label">Planned list price</div>
+          <div class="modal-metric-value">€${(c.list/1000).toFixed(1)}<span style="font-size:14px;">k</span></div>
+          <div class="modal-metric-sub">${provFull}</div>
+        </div>
+      </div>
+      <div class="modal-section-title">Downstream referencers · cascade exposure</div>
+      <div>${referencedBy.length ? referencedBy.map(x=>`<span style="display:inline-block;padding:3px 9px;background:${referencedBy.length>=5?'var(--deduction-soft)':'var(--brand-soft)'};color:${referencedBy.length>=5?'var(--deduction-ink)':'var(--brand-ink)'};border-radius:3px;font-size:12px;font-weight:600;margin:2px 6px 2px 0;">${x.code} · ${x.name}</span>`).join('') : '<span style="font-size:12px;color:var(--muted);font-style:italic;">None</span>'}</div>
+    `;
+  } else {
+    body = `
+      <div class="modal-metric-grid">
+        <div class="modal-metric">
+          <div class="modal-metric-label">YTD Plan (LSO)</div>
+          <div class="modal-metric-value">$${c.planYTD.toFixed(1)}<span style="font-size:14px;">M</span></div>
+          <div class="modal-metric-sub">system-calculated target</div>
+        </div>
+        <div class="modal-metric">
+          <div class="modal-metric-label">YTD Actuals</div>
+          <div class="modal-metric-value">$${c.actYTD.toFixed(1)}<span style="font-size:14px;">M</span></div>
+          <div class="modal-metric-sub">from ex-US actuals ingest</div>
+        </div>
+        <div class="modal-metric">
+          <div class="modal-metric-label">YTD Variance</div>
+          <div class="modal-metric-value" style="color:${isPos?'var(--net-ink)':'var(--deduction-ink)'};">${isPos?'+':'−'}$${Math.abs(varAbs)}<span style="font-size:14px;">M</span></div>
+          <div class="modal-metric-sub" style="color:${isPos?'var(--net-ink)':'var(--deduction-ink)'};">${varPct}% vs plan</div>
+        </div>
+      </div>
+
+      <div class="modal-section-title">FY26 forecast</div>
+      <div class="modal-metric-grid" style="margin-bottom:0;">
+        <div class="modal-metric">
+          <div class="modal-metric-label">FY Plan</div>
+          <div class="modal-metric-value">$${c.planFY.toFixed(1)}<span style="font-size:14px;">M</span></div>
+        </div>
+        <div class="modal-metric">
+          <div class="modal-metric-label">FY Run-rate Forecast</div>
+          <div class="modal-metric-value">$${c.ffFY.toFixed(1)}<span style="font-size:14px;">M</span></div>
+        </div>
+        <div class="modal-metric">
+          <div class="modal-metric-label">FY Gap</div>
+          <div class="modal-metric-value" style="color:${(+ffVarAbs)>=0?'var(--net-ink)':'var(--deduction-ink)'};">${(+ffVarAbs)>=0?'+':'−'}$${Math.abs(ffVarAbs)}<span style="font-size:14px;">M</span></div>
+        </div>
+      </div>
+
+      <div class="modal-section-title">Launch execution</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px;">
+        <div><span style="color:var(--muted);">LSO planned start:</span> <b>M+${c.launchM_plan}</b></div>
+        <div><span style="color:var(--muted);">Actual start:</span> <b>M+${c.launchM_actual}</b></div>
+        <div><span style="color:var(--muted);">Launch delta:</span> <b style="color:${c.launchM_actual===c.launchM_plan?'var(--muted)':c.launchM_actual-c.launchM_plan<0?'var(--net-ink)':'var(--deduction-ink)'};">${c.launchM_actual===c.launchM_plan ? 'on plan' : (c.launchM_actual-c.launchM_plan > 0 ? '+' : '') + (c.launchM_actual-c.launchM_plan) + ' months'}</b></div>
+        <div><span style="color:var(--muted);">Rate provenance:</span> <b>${provFull}</b></div>
+      </div>
+
+      <div class="modal-section-title">Pricing</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;font-size:13px;">
+        <div><span style="color:var(--muted);">List price:</span><br><b style="font-family:var(--mono);">€${c.list.toLocaleString()}</b></div>
+        <div><span style="color:var(--muted);">Net price:</span><br><b style="font-family:var(--mono);color:var(--net-ink);">€${c.net.toLocaleString()}</b></div>
+        <div><span style="color:var(--muted);">Deduction:</span><br><b style="font-family:var(--mono);color:var(--deduction-ink);">−${((c.list-c.net)/c.list*100).toFixed(1)}%</b></div>
+      </div>
+
+      <div class="modal-section-title">Downstream referencers · cascade exposure (${referencedBy.length})</div>
+      <div>${referencedBy.length ? referencedBy.map(x=>`<span style="display:inline-block;padding:3px 9px;background:${referencedBy.length>=5?'var(--deduction-soft)':'var(--brand-soft)'};color:${referencedBy.length>=5?'var(--deduction-ink)':'var(--brand-ink)'};border-radius:3px;font-size:12px;font-weight:600;margin:2px 6px 2px 0;">${x.code} · ${x.name}</span>`).join('') : '<span style="font-size:12px;color:var(--muted);font-style:italic;">No downstream references</span>'}</div>
+      ${referencedBy.length >= 5 ? '<div style="margin-top:10px;font-size:12px;color:var(--deduction-ink);"><b>Cascade risk:</b> a price cut here propagates to '+referencedBy.length+' countries. Consider MEA renegotiation to preserve list.</div>' : ''}
+    `;
+  }
+  document.getElementById('modalBody').innerHTML = body;
+
+  const cta = document.getElementById('modalCTA');
+  if (isOff || isRisk) {
+    cta.style.display = 'inline-block';
+    cta.textContent = isOff ? 'Reallocate this shortfall →' : 'Review in Workbench →';
+    cta.onclick = () => { closePerfModal(); openRebal(code); };
+  } else {
+    cta.style.display = 'none';
+  }
+  document.getElementById('perfModal').classList.add('active');
+}
+function closePerfModal() {
+  document.getElementById('perfModal').classList.remove('active');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePerfModal();
+});
+
+// Strip native title tooltips on interactive elements — the guided tour replaces them
+document.querySelectorAll('button, select, input, .rebal-country, tr.row, .period-picker').forEach(el => el.removeAttribute('title'));
+
+// Init
+renderMap();
+renderHealthBand();
+renderCountryPanel('FR');
+</script>
+
+
+</body></html>
